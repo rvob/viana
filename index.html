@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="language" content="pt-BR">
 <meta name="geo.region" content="BR">
 
@@ -34,10 +34,11 @@ html {
 
 body {
     min-height: 100vh;
+    min-height: 100dvh;
     font-family: 'Poppins', sans-serif;
     color: var(--text);
     background: radial-gradient(circle at 15% 0%, #10312C 0%, #08090d 45%);
-    padding: 22px 18px 20px;
+    padding: max(22px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
     overflow-x: hidden;
 }
 
@@ -88,6 +89,10 @@ h1 {
     box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
     transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
     animation: cardIn .4s ease both;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 /* Card Composto para UniTV */
@@ -138,6 +143,7 @@ h1 {
     align-items: center;
     gap: 6px;
     padding: 8px 10px;
+    min-height: 40px;
     background: rgba(0, 0, 0, .25);
     border: 1px solid rgba(255, 255, 255, .15);
     border-radius: 10px;
@@ -146,6 +152,10 @@ h1 {
     font-size: 12px;
     font-weight: 500;
     transition: transform .2s ease, background .2s ease;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .btn-sublink:hover {
@@ -265,6 +275,15 @@ footer a:hover {
     .buttons-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* Telas grandes de TV (assistidas a distância) */
+@media(min-width: 1600px) {
+    .container { max-width: 1300px; }
+    .button, .button-group { min-height: 100px; padding: 18px 24px; }
+    .btn-text strong, .unitv-title strong { font-size: 20px; }
+    .btn-text small { font-size: 14px; }
+    .button i, .unitv-title i { width: 56px; height: 56px; font-size: 22px; }
+}
+
 @media(prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation: none !important;
@@ -355,6 +374,47 @@ footer a:hover {
 </div>
 
 <script>
+/* ==============================================================
+   ABERTURA DE LINKS COMPATÍVEL COM TODOS OS APARELHOS
+   Muitos navegadores embutidos de TV Box / apps de terceiros
+   bloqueiam ou ignoram silenciosamente "target=_blank" e
+   window.open(). Por isso, em vez de depender do navegador
+   abrir uma nova aba (que falha em vários TV Box e WebViews),
+   forçamos a navegação/download na própria aba, que é o método
+   suportado universalmente por Android, TV Box, Smart TV e PC.
+   =============================================================== */
+function abrirLink(url) {
+    // Alguns WebViews antigos precisam de um pequeno delay
+    // para processar o clique antes de navegar.
+    setTimeout(() => {
+        try {
+            window.location.href = url;
+        } catch (err) {
+            // Fallback final: tenta window.open em nova aba
+            window.open(url, '_self');
+        }
+    }, 30);
+}
+
+document.querySelectorAll('a.button, a.btn-sublink').forEach((link) => {
+    // Remove o target="_blank" para evitar que TV Boxes tentem
+    // abrir uma nova janela/aba que não existe e o clique "não faça nada".
+    link.removeAttribute('target');
+
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+        abrirLink(this.getAttribute('href'));
+    });
+
+    // Garante que o "OK"/Enter do controle remoto também funcione
+    link.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            abrirLink(this.getAttribute('href'));
+        }
+    });
+});
+
 /* Controle de Navegação TV / Teclado (Suporta links internos do container) */
 const focusableElements = [...document.querySelectorAll('.button, .btn-sublink')];
 let current = 0;
