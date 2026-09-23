@@ -1,1 +1,172 @@
-a
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111111">
+  <meta name="background-color" content="#111111">
+  <meta name="description" content="Livro de Capturas - COTW">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Livro de Capturas">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <title>Livro de Capturas - COTW</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #111;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      padding-top: var(--safe-top);
+      padding-right: var(--safe-right);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+    }
+    #app {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding-top: var(--safe-top);
+      padding-right: var(--safe-right);
+      padding-bottom: var(--safe-bottom);
+      padding-left: var(--safe-left);
+      background: #111;
+    }
+    #cotw-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: #111;
+    }
+    #loading {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      background: #111;
+      color: #fff;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+    #loading.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loading-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+      padding: 24px;
+    }
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 3px solid #444;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #install {
+      position: fixed;
+      right: calc(16px + var(--safe-right));
+      bottom: calc(16px + var(--safe-bottom));
+      z-index: 20;
+      display: none;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fff;
+      background: #1f1f1f;
+      box-shadow: 0 5px 22px rgba(0,0,0,.45);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #install.show { display: block; }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <iframe
+      id="cotw-frame"
+      title="Livro de Capturas - COTW"
+      src="https://script.google.com/macros/s/AKfycbxBXGk62nJMEK5_Lnw7ty57giwflD0USGVwITnrbF7mMpKTb9IW-xli0-VUmhpNgr-MFg/exec"
+      allow="fullscreen; clipboard-read; clipboard-write"
+      allowfullscreen
+      referrerpolicy="strict-origin-when-cross-origin">
+    </iframe>
+  </main>
+
+  <div id="loading">
+    <div class="loading-box">
+      <div class="spinner"></div>
+      <strong>Livro de Capturas - COTW</strong>
+      <span>Carregando...</span>
+    </div>
+  </div>
+
+  <button id="install" type="button">Instalar aplicativo</button>
+
+  <script>
+    const frame = document.getElementById('cotw-frame');
+    const loading = document.getElementById('loading');
+    const installButton = document.getElementById('install');
+
+    frame.addEventListener('load', () => {
+      setTimeout(() => loading.classList.add('hidden'), 250);
+    });
+
+    // Service Worker: somente o shell do GitHub Pages.
+    // O conteúdo do Google Apps Script continua sendo carregado normalmente no iframe.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(console.warn);
+      });
+    }
+
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      installButton.classList.add('show');
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installButton.classList.remove('show');
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installButton.classList.remove('show');
+      deferredPrompt = null;
+    });
+  </script>
+</body>
+</html>
