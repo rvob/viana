@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Minha Planilha</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a73e8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Minha Planilha">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+
+<style>
+  :root {
+    color-scheme: light dark;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #1a73e8;
+    overflow: hidden;
+  }
+  #app {
+    position: fixed;
+    inset: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+  }
+  iframe {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #fff;
+  }
+  #loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    background: #1a73e8;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: opacity .3s ease;
+    z-index: 10;
+  }
+  #loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255,255,255,.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #error {
+    display: none;
+    position: fixed;
+    inset: 0;
+    padding: 24px;
+    padding-top: calc(24px + env(safe-area-inset-top, 0px));
+    background: #fff;
+    color: #202124;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    text-align: center;
+    z-index: 20;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  #error.visible { display: flex; }
+  #error button {
+    margin-top: 8px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #1a73e8;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <div>Carregando…</div>
+</div>
+
+<div id="error">
+  <div style="font-size:40px;">⚠️</div>
+  <div><strong>Não foi possível carregar a planilha</strong></div>
+  <div style="font-size:14px;color:#5f6368;max-width:320px;">
+    Verifique sua conexão com a internet, ou confirme se a implantação do
+    Apps Script ainda está ativa e com acesso "Qualquer pessoa".
+  </div>
+  <button onclick="reload()">Tentar novamente</button>
+</div>
+
+<div id="app">
+  <iframe
+    id="sheetFrame"
+    src="https://script.google.com/macros/s/AKfycbzJNX-uAbUBXLjzZmsd3K2qOgXIovfnJkF0mHLsfXDez5w7Ii_eGn_UiF78FwoVOaJp/exec"
+    title="Minha Planilha"
+    allow="clipboard-write"
+  ></iframe>
+</div>
+
+<script>
+  const frame = document.getElementById('sheetFrame');
+  const loading = document.getElementById('loading');
+  const errorBox = document.getElementById('error');
+  let loaded = false;
+
+  frame.addEventListener('load', () => {
+    loaded = true;
+    loading.classList.add('hidden');
+    errorBox.classList.remove('visible');
+  });
+
+  // Se não carregar em 12s, mostra erro
+  setTimeout(() => {
+    if (!loaded) {
+      loading.classList.add('hidden');
+      errorBox.classList.add('visible');
+    }
+  }, 12000);
+
+  function reload() {
+    errorBox.classList.remove('visible');
+    loading.classList.remove('hidden');
+    loaded = false;
+    frame.src = frame.src;
+    setTimeout(() => {
+      if (!loaded) {
+        loading.classList.add('hidden');
+        errorBox.classList.add('visible');
+      }
+    }, 12000);
+  }
+
+  // Registra o service worker (para funcionar como PWA instalável)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>
