@@ -10,9 +10,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Livro de Capturas">
-  <link rel="icon" href="icons/icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="/cotw/icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="/cotw/icons/icon-192.png">
+  <link rel="manifest" href="/cotw/manifest.json">
   <title>Livro de Capturas - COTW</title>
   <style>
     :root {
@@ -143,7 +143,7 @@
     // O conteúdo do Google Apps Script continua sendo carregado normalmente no iframe.
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(console.warn);
+        navigator.serviceWorker.register('./cotw/sw.js').catch(console.warn);
       });
     }
 
