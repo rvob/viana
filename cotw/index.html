@@ -139,71 +139,114 @@
   <button id="install" type="button">Instalar aplicativo</button>
 
   <script>
-    const frame = document.getElementById('cotw-frame');
-    const loading = document.getElementById('loading');
-    const spinner = document.getElementById('spinner');
-    const loadingMsg = document.getElementById('loading-msg');
-    const retryBtn = document.getElementById('retry');
-    const installButton = document.getElementById('install');
+    var EXEC_URL = 'https://script.google.com/macros/s/AKfycbxBXGk62nJMEK5_Lnw7ty57giwflD0USGVwITnrbF7mMpKTb9IW-xli0-VUmhpNgr-MFg/exec';
 
-    let carregou = false;
-    let timeoutId = setTimeout(() => {
-      if (carregou) return;
-      spinner.style.display = 'none';
-      loadingMsg.textContent = 'Está demorando mais que o normal. Verifique sua conexão.';
-      retryBtn.classList.add('show');
-    }, 12000);
+    // No iOS, o Safari/WebKit bloqueia o cookie de sessão do Google dentro de um
+    // iframe de outra origem (proteção de rastreamento entre sites) — o login do
+    // Google também se recusa a abrir dentro de iframe. O app nunca abriria de
+    // fato ali dentro. Então no iOS a gente nem tenta o iframe: manda direto pro
+    // Apps Script na mesma aba (isso ainda funciona normalmente dentro do PWA
+    // instalado, em tela cheia, sem a barra do Safari).
+    var isIOS = /iP(hone|od|ad)/.test(navigator.platform) ||
+      (navigator.userAgent.includes('Macintosh') && 'ontouchend' in document);
 
-    frame.addEventListener('load', () => {
-      carregou = true;
-      clearTimeout(timeoutId);
-      setTimeout(() => loading.classList.add('hidden'), 250);
-    });
-
-    retryBtn.addEventListener('click', () => {
-      carregou = false;
-      loading.classList.remove('hidden');
-      spinner.style.display = '';
-      loadingMsg.textContent = 'Carregando...';
-      retryBtn.classList.remove('show');
-      frame.src = frame.src; // força recarregar o iframe
-      timeoutId = setTimeout(() => {
-        if (carregou) return;
-        spinner.style.display = 'none';
-        loadingMsg.textContent = 'Está demorando mais que o normal. Verifique sua conexão.';
-        retryBtn.classList.add('show');
-      }, 12000);
-    });
-
-    // Service Worker: somente o shell do GitHub Pages (este index, manifest e
-    // ícones). O conteúdo do Google Apps Script continua sendo carregado
-    // normalmente no iframe, sem passar pelo cache do SW.
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(console.warn);
-      });
+    if (isIOS) {
+      window.location.replace(EXEC_URL);
+    } else {
+      iniciarShell();
     }
 
-    let deferredPrompt = null;
+    function iniciarShell() {
+      const frame = document.getElementById('cotw-frame');
+      const loading = document.getElementById('loading');
+      const spinner = document.getElementById('spinner');
+      const loadingMsg = document.getElementById('loading-msg');
+      const retryBtn = document.getElementById('retry');
+      const installButton = document.getElementById('install');
 
-    window.addEventListener('beforeinstallprompt', (event) => {
-      event.preventDefault();
-      deferredPrompt = event;
-      installButton.classList.add('show');
-    });
+      let carregou = false;
+      let timeoutId;
 
-    installButton.addEventListener('click', async () => {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      await deferredPrompt.userChoice;
-      deferredPrompt = null;
-      installButton.classList.remove('show');
-    });
+      function esconderCarregando() {
+        carregou = true;
+        clearTimeout(timeoutId);
+        setTimeout(() => loading.classList.add('hidden'), 250);
+      }
 
-    window.addEventListener('appinstalled', () => {
-      installButton.classList.remove('show');
-      deferredPrompt = null;
-    });
+      function recarregar() {
+        carregou = false;
+        loading.classList.remove('hidden');
+        spinner.style.display = '';
+        loadingMsg.textContent = 'Carregando...';
+        retryBtn.classList.remove('show');
+        frame.src = frame.src; // força recarregar o iframe
+        armarTimeout();
+      }
+
+      function armarTimeout() {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          if (carregou) return;
+          spinner.style.display = 'none';
+          loadingMsg.textContent = 'Está demorando mais que o normal. Toque na tela ou tente de novo.';
+          retryBtn.classList.add('show');
+        }, 12000);
+      }
+
+      armarTimeout();
+
+      frame.addEventListener('load', esconderCarregando);
+
+      // Às vezes o iframe já terminou de carregar mas o evento "load" não chega
+      // a disparar a tempo (comum em WebViews mobile). Se a pessoa tocar na tela
+      // de carregamento, assume que ela já está vendo o app por trás e libera a
+      // tela na hora, em vez de segurar até o timeout de 12s.
+      loading.addEventListener('click', () => {
+        if (!retryBtn.classList.contains('show')) esconderCarregando();
+      });
+
+      // Quando o app volta de segundo plano (ex.: trocou de app e voltou) via
+      // cache do navegador (bfcache), o evento "load" do iframe não dispara de
+      // novo — sem isso, uma tela de carregamento antiga podia ficar por cima.
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) esconderCarregando();
+      });
+
+      retryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        recarregar();
+      });
+
+      // Service Worker: somente o shell do GitHub Pages (este index, manifest e
+      // ícones). O conteúdo do Google Apps Script continua sendo carregado
+      // normalmente no iframe, sem passar pelo cache do SW.
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(console.warn);
+        });
+      }
+
+      let deferredPrompt = null;
+
+      window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredPrompt = event;
+        installButton.classList.add('show');
+      });
+
+      installButton.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installButton.classList.remove('show');
+      });
+
+      window.addEventListener('appinstalled', () => {
+        installButton.classList.remove('show');
+        deferredPrompt = null;
+      });
+    }
   </script>
 </body>
 </html>
