@@ -10,8 +10,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Livro de Capturas">
-  <link rel="icon" href="/cotw/icons/icon-192.png" type="image/png">
-  <link rel="apple-touch-icon" href="/cotw/icons/icon-192.png">
+  <link rel="icon" href="/cotw/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/cotw/icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="/cotw/icons/apple-touch-icon-180.png">
   <link rel="manifest" href="/cotw/manifest.json">
   <title>Livro de Capturas - COTW</title>
   <style>
@@ -31,12 +32,6 @@
       background: #111;
       overflow: hidden;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-    body {
-      padding-top: var(--safe-top);
-      padding-right: var(--safe-right);
-      padding-bottom: var(--safe-bottom);
-      padding-left: var(--safe-left);
     }
     #app {
       position: fixed;
@@ -90,6 +85,18 @@
       animation: spin .8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    #retry {
+      display: none;
+      margin-top: 4px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: #fff;
+      background: #1f1f1f;
+      cursor: pointer;
+      font: inherit;
+    }
+    #retry.show { display: inline-block; }
     #install {
       position: fixed;
       right: calc(16px + var(--safe-right));
@@ -122,9 +129,10 @@
 
   <div id="loading">
     <div class="loading-box">
-      <div class="spinner"></div>
+      <div class="spinner" id="spinner"></div>
       <strong>Livro de Capturas - COTW</strong>
-      <span>Carregando...</span>
+      <span id="loading-msg">Carregando...</span>
+      <button id="retry" type="button">Tentar de novo</button>
     </div>
   </div>
 
@@ -133,17 +141,46 @@
   <script>
     const frame = document.getElementById('cotw-frame');
     const loading = document.getElementById('loading');
+    const spinner = document.getElementById('spinner');
+    const loadingMsg = document.getElementById('loading-msg');
+    const retryBtn = document.getElementById('retry');
     const installButton = document.getElementById('install');
 
+    let carregou = false;
+    let timeoutId = setTimeout(() => {
+      if (carregou) return;
+      spinner.style.display = 'none';
+      loadingMsg.textContent = 'Está demorando mais que o normal. Verifique sua conexão.';
+      retryBtn.classList.add('show');
+    }, 12000);
+
     frame.addEventListener('load', () => {
+      carregou = true;
+      clearTimeout(timeoutId);
       setTimeout(() => loading.classList.add('hidden'), 250);
     });
 
-    // Service Worker: somente o shell do GitHub Pages.
-    // O conteúdo do Google Apps Script continua sendo carregado normalmente no iframe.
+    retryBtn.addEventListener('click', () => {
+      carregou = false;
+      loading.classList.remove('hidden');
+      spinner.style.display = '';
+      loadingMsg.textContent = 'Carregando...';
+      retryBtn.classList.remove('show');
+      frame.src = frame.src; // força recarregar o iframe
+      timeoutId = setTimeout(() => {
+        if (carregou) return;
+        spinner.style.display = 'none';
+        loadingMsg.textContent = 'Está demorando mais que o normal. Verifique sua conexão.';
+        retryBtn.classList.add('show');
+      }, 12000);
+    });
+
+    // Service Worker: somente o shell do GitHub Pages (este index, manifest e
+    // ícones). O conteúdo do Google Apps Script continua sendo carregado
+    // normalmente no iframe, sem passar pelo cache do SW.
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./cotw/sw.js').catch(console.warn);
+        navigator.serviceWorker.register('./sw.js').catch(console.warn);
       });
     }
 
