@@ -1,4 +1,4 @@
-const CACHE_NAME = 'livro-cotw-shell-v5';
+const CACHE_NAME = 'livro-cotw-shell-v7';
 const APP_SHELL = [
   './',
   './index.html',
