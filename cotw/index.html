@@ -10,10 +10,10 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Livro de Capturas">
-  <link rel="icon" href="/cotw/icons/favicon-32.png" sizes="32x32" type="image/png">
-  <link rel="icon" href="/cotw/icons/icon-192.png" sizes="192x192" type="image/png">
-  <link rel="apple-touch-icon" href="/cotw/icons/apple-touch-icon-180.png">
-  <link rel="manifest" href="/cotw/manifest.json">
+  <link rel="icon" href="/cotw/icons/favicon-32.png?v=4" sizes="32x32" type="image/png">
+  <link rel="icon" href="/cotw/icons/icon-192.png?v=4" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="/cotw/icons/apple-touch-icon-180.png?v=4">
+  <link rel="manifest" href="/cotw/manifest.json?v=4">
   <title>Livro de Capturas - COTW</title>
   <style>
     :root {
@@ -97,6 +97,39 @@
       font: inherit;
     }
     #retry.show { display: inline-block; }
+    #ios-landing {
+      position: fixed;
+      inset: 0;
+      z-index: 15;
+      display: grid;
+      place-items: center;
+      background: #111;
+      color: #fff;
+    }
+    #ios-landing .icone {
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
+      display: block;
+    }
+    #ios-landing p {
+      max-width: 300px;
+      margin: 0;
+      line-height: 1.45;
+    }
+    #ios-landing .msg { color: #cfcfcf; font-size: 14px; }
+    #ios-landing .dica { color: #9a9a9a; font-size: 12.5px; margin-top: 4px; }
+    #ios-abrir {
+      margin-top: 4px;
+      border: 0;
+      border-radius: 10px;
+      padding: 13px 26px;
+      color: #fff;
+      background: #2f7a5e;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+    }
     #install {
       position: fixed;
       right: calc(16px + var(--safe-right));
@@ -120,7 +153,6 @@
     <iframe
       id="cotw-frame"
       title="Livro de Capturas - COTW"
-      src="https://script.google.com/macros/s/AKfycbxBXGk62nJMEK5_Lnw7ty57giwflD0USGVwITnrbF7mMpKTb9IW-xli0-VUmhpNgr-MFg/exec"
       allow="fullscreen; clipboard-read; clipboard-write"
       allowfullscreen
       referrerpolicy="strict-origin-when-cross-origin">
@@ -136,24 +168,56 @@
     </div>
   </div>
 
+  <div id="ios-landing" hidden>
+    <div class="loading-box">
+      <img class="icone" src="/cotw/icons/icon-512.png?v=4" alt="">
+      <strong>Livro de Capturas - COTW</strong>
+      <p class="msg">No iPhone o app abre no próprio Safari — o login do Google não funciona dentro do modo instalado com moldura.</p>
+      <button id="ios-abrir" type="button">Abrir o app</button>
+      <p class="dica">Dica: toque em <strong>Compartilhar</strong> e depois em <strong>Adicionar à Tela de Início</strong> pra criar um atalho com o ícone certinho.</p>
+    </div>
+  </div>
+
   <button id="install" type="button">Instalar aplicativo</button>
 
   <script>
     var EXEC_URL = 'https://script.google.com/macros/s/AKfycbxBXGk62nJMEK5_Lnw7ty57giwflD0USGVwITnrbF7mMpKTb9IW-xli0-VUmhpNgr-MFg/exec';
 
-    // No iOS, o Safari/WebKit bloqueia o cookie de sessão do Google dentro de um
-    // iframe de outra origem (proteção de rastreamento entre sites) — o login do
-    // Google também se recusa a abrir dentro de iframe. O app nunca abriria de
-    // fato ali dentro. Então no iOS a gente nem tenta o iframe: manda direto pro
-    // Apps Script na mesma aba (isso ainda funciona normalmente dentro do PWA
-    // instalado, em tela cheia, sem a barra do Safari).
     var isIOS = /iP(hone|od|ad)/.test(navigator.platform) ||
       (navigator.userAgent.includes('Macintosh') && 'ontouchend' in document);
 
-    if (isIOS) {
+    // navigator.standalone só existe no Safari/iOS: true quando o app foi
+    // aberto pelo ícone da Tela de Início (já "instalado"), false quando é
+    // uma aba comum do Safari.
+    var isStandalone = window.navigator.standalone === true ||
+      window.matchMedia('(display-mode: standalone)').matches;
+
+    if (isIOS && isStandalone) {
+      // Já instalado e aberto pelo atalho: o ícone já foi capturado há muito
+      // tempo, então pode ir direto pro app (o iframe não funcionaria aqui
+      // por causa do bloqueio de cookie de terceiros do WebKit).
       window.location.replace(EXEC_URL);
+    } else if (isIOS) {
+      // Aba comum do Safari (ainda não instalado, ou só navegando). Aqui a
+      // página PRECISA continuar sendo esta — com nosso ícone e manifest —
+      // porque é o que o "Adicionar à Tela de Início" vai capturar. Por isso
+      // não redireciona sozinho: mostra um botão, e deixa a pessoa instalar
+      // o atalho com o ícone certo antes (ou depois) de usar o app.
+      mostrarTelaIOS();
     } else {
       iniciarShell();
+    }
+
+    function mostrarTelaIOS() {
+      document.getElementById('ios-landing').hidden = false;
+      document.getElementById('ios-abrir').addEventListener('click', () => {
+        window.location.href = EXEC_URL;
+      });
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js').catch(console.warn);
+        });
+      }
     }
 
     function iniciarShell() {
@@ -179,7 +243,7 @@
         spinner.style.display = '';
         loadingMsg.textContent = 'Carregando...';
         retryBtn.classList.remove('show');
-        frame.src = frame.src; // força recarregar o iframe
+        frame.src = EXEC_URL; // força recarregar o iframe
         armarTimeout();
       }
 
@@ -193,6 +257,7 @@
         }, 12000);
       }
 
+      frame.src = EXEC_URL;
       armarTimeout();
 
       frame.addEventListener('load', esconderCarregando);

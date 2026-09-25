@@ -1,14 +1,14 @@
-const CACHE_NAME = 'livro-cotw-shell-v4';
+const CACHE_NAME = 'livro-cotw-shell-v5';
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-192.png',
-  './icons/icon-maskable-512.png',
-  './icons/apple-touch-icon-180.png',
-  './icons/favicon-32.png'
+  './manifest.json?v=4',
+  './icons/icon-192.png?v=4',
+  './icons/icon-512.png?v=4',
+  './icons/icon-maskable-192.png?v=4',
+  './icons/icon-maskable-512.png?v=4',
+  './icons/apple-touch-icon-180.png?v=4',
+  './icons/favicon-32.png?v=4'
 ];
 
 self.addEventListener('install', event => {
