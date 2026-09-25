@@ -11,7 +11,7 @@
 // aumente o número da versão abaixo — isso força o navegador a descartar o
 // cache antigo.
 
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const CACHE_NAME = "controle-financeiro-shell-" + CACHE_VERSION;
 
 const SHELL_FILES = [
