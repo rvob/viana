@@ -2,6 +2,7 @@
   "name": "ClientHub",
   "short_name": "ClientHub",
   "description": "Gestão de clientes IPTV: renovações, créditos e cobranças.",
+  "id": "/ClientHub/",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
