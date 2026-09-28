@@ -1,1 +1,186 @@
-as
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>ClientHub</title>
+<meta name="description" content="Gestão de clientes IPTV">
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3d5afe">
+
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ClientHub">
+<meta name="mobile-web-app-capable" content="yes">
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #f6f7f9;
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+  #app-frame {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    border: 0;
+    display: block;
+    background: #f6f7f9;
+  }
+
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, #3d5afe 0%, #3049d6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity .35s ease;
+  }
+  #splash img {
+    width: 96px;
+    height: 96px;
+    border-radius: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  }
+  #splash .nome {
+    margin-top: 16px;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  #splash.oculto {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  #offline {
+    position: fixed;
+    inset: 0;
+    background: #f6f7f9;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    z-index: 5;
+  }
+  #offline.visivel { display: flex; }
+  #offline .ic {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #eceffe;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  #offline h1 {
+    font-size: 17px;
+    color: #1a1d29;
+    margin: 0 0 6px;
+  }
+  #offline p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 18px;
+    max-width: 280px;
+    line-height: 1.5;
+  }
+  #offline button {
+    background: #3d5afe;
+    color: #fff;
+    border: 0;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+</style>
+</head>
+<body>
+
+<div id="offline">
+  <div class="ic">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3d5afe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l22 22"></path><path d="M16.72 11.06A10.94 10.94 0 0119 12.55"></path><path d="M5 12.55a10.94 10.94 0 015.17-2.39"></path><path d="M10.71 5.05A16 16 0 0122.58 9"></path><path d="M1.42 9a15.91 15.91 0 014.7-2.88"></path><path d="M8.53 16.11a6 6 0 016.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+  </div>
+  <h1>Sem conexão</h1>
+  <p>Não foi possível carregar o ClientHub. Verifique sua internet e tente novamente.</p>
+  <button id="btn-tentar">Tentar novamente</button>
+</div>
+
+<div id="splash">
+  <img src="icons/icon-192.png" alt="ClientHub">
+  <div class="nome">ClientHub</div>
+</div>
+
+<iframe id="app-frame" src="https://script.google.com/macros/s/AKfycbwX_dvW9WpXRsvSUz-KANgSbjL1CmWdbE6BX56STrNzqT0S_ycZkX2cm3i6Sh787wFj/exec" title="ClientHub" allow="clipboard-read; clipboard-write"></iframe>
+
+<script>
+  var frame = document.getElementById('app-frame');
+  var splash = document.getElementById('splash');
+  var offline = document.getElementById('offline');
+  var btnTentar = document.getElementById('btn-tentar');
+  var carregou = false;
+  var URL_APP = frame.getAttribute('src');
+
+  function esconderSplash() {
+    carregou = true;
+    offline.classList.remove('visivel');
+    splash.classList.add('oculto');
+  }
+
+  frame.addEventListener('load', esconderSplash);
+
+  // Se em alguns segundos o iframe não carregar (sem internet, URL bloqueada
+  // etc.), mostramos a tela de "sem conexão" em vez de deixar o splash preso.
+  setTimeout(function () {
+    if (!carregou) {
+      splash.classList.add('oculto');
+      offline.classList.add('visivel');
+    }
+  }, 9000);
+
+  btnTentar.addEventListener('click', function () {
+    offline.classList.remove('visivel');
+    splash.classList.remove('oculto');
+    carregou = false;
+    frame.src = URL_APP + (URL_APP.indexOf('?') === -1 ? '?' : '&') + 'r=' + Date.now();
+    setTimeout(function () {
+      if (!carregou) {
+        splash.classList.add('oculto');
+        offline.classList.add('visivel');
+      }
+    }, 9000);
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
+</script>
+
+</body>
+</html>
