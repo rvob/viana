@@ -38,6 +38,7 @@ body {
     font-family: 'Poppins', sans-serif;
     color: var(--text);
     background: radial-gradient(circle at 15% 0%, #10312C 0%, #08090d 45%);
+    padding: 22px 18px 20px;
     padding: max(22px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
     overflow-x: hidden;
 }
@@ -55,6 +56,7 @@ header {
 }
 
 h1 {
+    font-size: 28px;
     font-size: clamp(24px, 4vw, 34px);
     font-weight: 700;
     letter-spacing: -.5px;
@@ -290,6 +292,182 @@ footer a:hover {
         transition: none !important;
     }
 }
+
+/* ============================================================
+   FOCO VISÍVEL TAMBÉM EM NAVEGADORES ANTIGOS (sem :focus-visible)
+   ============================================================ */
+.button:focus,
+.btn-sublink:focus,
+.btn-modal:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #fff, 0 0 0 6px #22B8A3;
+}
+.button:focus:not(:focus-visible) { box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
+.btn-sublink:focus:not(:focus-visible),
+.btn-modal:focus:not(:focus-visible) { box-shadow: none; }
+
+/* ============================================================
+   MODAL DE DOWNLOAD (contagem regressiva)
+   ============================================================ */
+html.modal-open,
+html.modal-open body { overflow: hidden; }
+
+.overlay {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(4, 6, 10, .82);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    overflow-y: auto;
+    animation: fadeIn .2s ease both;
+}
+.overlay[hidden] { display: none; }
+
+.modal {
+    width: 100%;
+    max-width: 460px;
+    margin: auto;
+    padding: 28px 22px 22px;
+    text-align: center;
+    border-radius: 20px;
+    background: linear-gradient(160deg, #142a27, #0b0e14 60%);
+    border: 1px solid rgba(255, 255, 255, .12);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+}
+
+.dl-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    border: 3px solid #22B8A3;
+    background: rgba(34, 184, 163, .1);
+    font-size: 46px;
+    font-weight: 700;
+    color: #fff;
+}
+.dl-circle.done { background: #22B8A3; font-size: 40px; }
+
+.modal h2 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.dl-status {
+    min-height: 21px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.dl-progress {
+    height: 6px;
+    margin: 16px 0 18px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, .1);
+    overflow: hidden;
+}
+.dl-progress span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #22B8A3, #5fe3cf);
+}
+.dl-progress.run span  { animation: fillBar 3s linear forwards; }
+.dl-progress.done span { width: 100%; }
+
+.modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0 -5px;
+}
+
+.btn-modal {
+    flex: 1 1 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    margin: 5px;
+    padding: 10px 14px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(255, 255, 255, .08);
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .15s ease, background .15s ease;
+}
+.btn-modal i { margin-right: 8px; }
+.btn-modal:hover { background: rgba(255, 255, 255, .16); }
+.btn-modal.primary { background: linear-gradient(135deg, #22B8A3, #0f8172); border-color: transparent; }
+.btn-modal.primary:hover { background: linear-gradient(135deg, #2ccfb8, #12967f); }
+.btn-modal:focus-visible { transform: scale(1.03); }
+
+.dl-tip {
+    margin-top: 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border-left: 3px solid #22B8A3;
+    background: rgba(34, 184, 163, .08);
+    color: #d3d8e0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.dl-url {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-top: 12px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px dashed rgba(255, 255, 255, .15);
+    background: rgba(0, 0, 0, .35);
+    color: #a9b0bd;
+    font-size: 11px;
+    text-align: left;
+    word-break: break-all;
+}
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fillBar { from { width: 0; } to { width: 100%; } }
+
+@media(max-width: 420px) {
+    .modal { padding: 24px 16px 18px; }
+    .btn-modal { flex-basis: 100%; }
+}
+
+/* TV: modal maior para leitura a distância */
+@media(min-width: 1600px) {
+    .modal { max-width: 620px; padding: 36px 32px 30px; }
+    .dl-circle { width: 120px; height: 120px; font-size: 58px; }
+    .modal h2 { font-size: 26px; }
+    .dl-status { font-size: 17px; }
+    .btn-modal { min-height: 60px; font-size: 18px; }
+    .dl-tip { font-size: 15px; }
+    .dl-url { font-size: 13px; }
+}
 </style>
 </head>
 
@@ -305,7 +483,7 @@ footer a:hover {
 <main class="buttons-grid">
 
     <!-- cPlayer -->
-    <a href="/app/cPlayer-0.14.0.apk" target="_blank" rel="noopener noreferrer" class="button btn-dark" aria-label="Baixar cPlayer IPTV">
+    <a href="http://clubneymar.com/cpa" target="_blank" rel="noopener noreferrer" class="button btn-dark" aria-label="Baixar cPlayer IPTV">
         <i class="fa-solid fa-download"></i>
         <span class="btn-text">
             <strong>cPlayer</strong>
@@ -314,7 +492,7 @@ footer a:hover {
     </a>
 	
     <!-- FastPro -->
-    <a href="http://p1fast.com/PlayPro-7.0.apk" target="_blank" rel="noopener noreferrer" class="button btn-yellow" aria-label="Baixar FastPro Player IPTV">
+    <a href="http://aftv.news/5279242" target="_blank" rel="noopener noreferrer" class="button btn-yellow" aria-label="Baixar FastPro Player IPTV">
         <i class="fa-solid fa-download"></i>
         <span class="btn-text">
             <strong>FastPro</strong>
@@ -373,78 +551,322 @@ footer a:hover {
 
 </div>
 
+<!-- Modal de download com contagem regressiva -->
+<div class="overlay" id="overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlTitle" aria-describedby="dlStatus">
+        <div class="dl-circle" id="dlCircle" aria-hidden="true">3</div>
+        <h2 id="dlTitle">Preparando download</h2>
+        <p class="dl-status" id="dlStatus" role="status" aria-live="polite">Seu download começa em 3…</p>
+        <div class="dl-progress" id="dlProgress" aria-hidden="true"><span></span></div>
+
+        <div class="modal-actions">
+            <a class="btn-modal primary" id="dlNow" href="#"><i class="fa-solid fa-download"></i>Baixar agora</a>
+            <button type="button" class="btn-modal" id="dlCopy"><i class="fa-regular fa-copy"></i>Copiar link</button>
+            <button type="button" class="btn-modal" id="dlClose">Cancelar</button>
+        </div>
+
+        <p class="dl-tip" id="dlTip"></p>
+        <div class="dl-url" id="dlUrl"></div>
+    </div>
+</div>
+
 <script>
 /* ==============================================================
-   ABERTURA DE LINKS COMPATÍVEL COM TODOS OS APARELHOS
-   Muitos navegadores embutidos de TV Box / apps de terceiros
-   bloqueiam ou ignoram silenciosamente "target=_blank" e
-   window.open(). Por isso, em vez de depender do navegador
-   abrir uma nova aba (que falha em vários TV Box e WebViews),
-   forçamos a navegação/download na própria aba, que é o método
-   suportado universalmente por Android, TV Box, Smart TV e PC.
+   CENTRAL DE APLICATIVOS - DOWNLOAD COM CONTAGEM REGRESSIVA
+
+   - Ao clicar/OK em um app, abre um modal na própria página
+     (sem nova aba: vários TV Box/WebViews não suportam).
+   - Contagem 3-2-1 e o download inicia sozinho.
+   - "Baixar agora" é um link normal (<a href>), então funciona
+     mesmo se o automático for bloqueado pelo navegador.
+   - Código escrito em ES5 para rodar em navegadores antigos.
    =============================================================== */
-function abrirLink(url) {
-    // Alguns WebViews antigos precisam de um pequeno delay
-    // para processar o clique antes de navegar.
-    setTimeout(() => {
-        try {
-            window.location.href = url;
-        } catch (err) {
-            // Fallback final: tenta window.open em nova aba
-            window.open(url, '_self');
-        }
-    }, 30);
-}
+(function () {
+    'use strict';
 
-document.querySelectorAll('a.button, a.btn-sublink').forEach((link) => {
-    // Remove o target="_blank" para evitar que TV Boxes tentem
-    // abrir uma nova janela/aba que não existe e o clique "não faça nada".
-    link.removeAttribute('target');
+    var COUNTDOWN = 3; // segundos até iniciar o download
 
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
-        abrirLink(this.getAttribute('href'));
-    });
+    var overlay  = document.getElementById('overlay');
+    var elCircle = document.getElementById('dlCircle');
+    var elTitle  = document.getElementById('dlTitle');
+    var elStatus = document.getElementById('dlStatus');
+    var elProg   = document.getElementById('dlProgress');
+    var btnNow   = document.getElementById('dlNow');
+    var btnCopy  = document.getElementById('dlCopy');
+    var btnClose = document.getElementById('dlClose');
+    var elTip    = document.getElementById('dlTip');
+    var elUrl    = document.getElementById('dlUrl');
 
-    // Garante que o "OK"/Enter do controle remoto também funcione
-    link.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            abrirLink(this.getAttribute('href'));
-        }
-    });
-});
+    var modalBtns = [btnNow, btnCopy, btnClose];
+    var links = Array.prototype.slice.call(document.querySelectorAll('a.button, a.btn-sublink'));
 
-/* Controle de Navegação TV / Teclado (Suporta links internos do container) */
-const focusableElements = [...document.querySelectorAll('.button, .btn-sublink')];
-let current = 0;
+    var timer = null, copyTimer = null, lastFocus = null, currentUrl = '';
 
-function focusElement(index) {
-    if (!focusableElements.length) return;
-    current = (index + focusableElements.length) % focusableElements.length;
-    focusableElements[current].focus();
-}
+    /* ---------- Detecção de dispositivo (só para a dica de instalação) ---------- */
+    function detectDevice() {
+        var ua = navigator.userAgent || '';
+        var touch = navigator.maxTouchPoints || ('ontouchstart' in window ? 1 : 0);
 
-document.addEventListener('keydown', (e) => {
-    if (!focusableElements.length) return;
-
-    const navKeys = ['ArrowRight', 'ArrowLeft', 'ArrowUp', 'ArrowDown'];
-    if (!navKeys.includes(e.key)) return;
-
-    e.preventDefault();
-
-    if (document.activeElement === document.body) {
-        focusElement(0);
-        return;
+        if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && touch > 1)) return 'ios';
+        if (/Tizen|Web0S|WebOS|NetCast|VIDAA|SMART-?TV|HbbTV/i.test(ua)) return 'smarttv';
+        if (/BRAVIA|Android ?TV|GoogleTV|CrKey/i.test(ua) || /AFT[A-Z]/.test(ua)) return 'tv';
+        if (/Android/i.test(ua)) return touch ? 'android' : 'tv'; // Android sem toque = TV Box
+        return 'desktop';
     }
 
-    const cols = window.innerWidth >= 1200 ? 3 : window.innerWidth >= 601 ? 2 : 1;
+    var TIPS = {
+        tv: 'Na TV Box / Android TV: quando o download terminar, abra o arquivo (pelo Downloader ou gerenciador de arquivos) e, se pedir, permita instalar de fontes desconhecidas.',
+        smarttv: 'Atenção: TVs Samsung (Tizen) e LG (webOS) não instalam arquivos APK. Esses apps são para TV Box, Android TV ou Fire TV.',
+        android: 'No celular: quando terminar, toque na notificação do download para instalar. Se pedir, permita instalar de fontes desconhecidas.',
+        ios: 'Esses apps são para Android e não instalam no iPhone/iPad. Abra esta página em um aparelho Android.',
+        desktop: 'No computador: esses apps são para Android e não instalam no Windows/Mac. Baixe e passe o arquivo para sua TV Box ou celular Android (pendrive, Bluetooth ou nuvem).'
+    };
 
-    if (e.key === 'ArrowRight') focusElement(current + 1);
-    if (e.key === 'ArrowLeft')  focusElement(current - 1);
-    if (e.key === 'ArrowDown')  focusElement(current + cols);
-    if (e.key === 'ArrowUp')    focusElement(current - cols);
-});
+    var device = detectDevice();
+
+    function isApk(url) { return /\.apk(\?|#|$)/i.test(url); }
+
+    /* ---------- Utilitários ---------- */
+    function closest(el, cls) {
+        while (el && el !== document) {
+            if (el.classList && el.classList.contains(cls)) return el;
+            el = el.parentNode;
+        }
+        return null;
+    }
+
+    function nomeDoLink(a) {
+        var strong = a.querySelector('.btn-text strong');
+        if (strong) return strong.textContent.replace(/\s+/g, ' ').trim();
+        var grupo = closest(a, 'button-group');
+        var base = grupo ? grupo.querySelector('.unitv-title strong') : null;
+        var nome = base ? base.textContent.trim() : 'Aplicativo';
+        return nome + ' — ' + a.textContent.replace(/\s+/g, ' ').trim();
+    }
+
+    function setBtn(btn, iconClass, texto) {
+        btn.innerHTML = (iconClass ? '<i class="' + iconClass + '"></i>' : '') + texto;
+    }
+
+    function stopTimer() {
+        if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    /* ---------- Contagem regressiva ---------- */
+    function renderCount(n) {
+        elCircle.textContent = n;
+        elStatus.textContent = 'Seu download começa em ' + n + '…';
+    }
+
+    function restartBar() {
+        elProg.className = 'dl-progress';
+        elProg.getElementsByTagName('span')[0].style.animationDuration = COUNTDOWN + 's';
+        void elProg.offsetWidth; // força reflow para reiniciar a animação
+        elProg.className = 'dl-progress run';
+    }
+
+    function marcarIniciado() {
+        stopTimer();
+        elCircle.className = 'dl-circle done';
+        elCircle.innerHTML = '<i class="fa-solid fa-check"></i>';
+        elStatus.textContent = 'Download iniciado! Se nada aconteceu, toque em “Baixar novamente”.';
+        elProg.className = 'dl-progress done';
+        setBtn(btnNow, 'fa-solid fa-download', 'Baixar novamente');
+        btnClose.textContent = 'Fechar';
+    }
+
+    function iniciarDownload() {
+        marcarIniciado();
+        // Navegação na própria aba: método mais compatível (TV Box, WebView, PC)
+        window.location.href = currentUrl;
+    }
+
+    /* ---------- Abrir / fechar modal ---------- */
+    function abrirModal(nome, url, origem) {
+        currentUrl = url;
+        lastFocus = origem || document.activeElement;
+
+        elTitle.textContent = nome;
+        elCircle.className = 'dl-circle';
+        btnNow.href = url;
+        setBtn(btnNow, 'fa-solid fa-download', 'Baixar agora');
+        setBtn(btnCopy, 'fa-regular fa-copy', 'Copiar link');
+        btnClose.textContent = 'Cancelar';
+        elUrl.textContent = url;
+
+        var dica = TIPS[device] || TIPS.desktop;
+        if (!isApk(url) && (device === 'tv' || device === 'android')) {
+            dica += ' Se abrir uma página em vez de baixar, siga as instruções que aparecerem.';
+        }
+        elTip.textContent = dica;
+
+        overlay.hidden = false;
+        document.documentElement.classList.add('modal-open');
+
+        var n = COUNTDOWN;
+        renderCount(n);
+        restartBar();
+        stopTimer();
+        timer = setInterval(function () {
+            n--;
+            if (n > 0) { renderCount(n); } else { iniciarDownload(); }
+        }, 1000);
+
+        btnNow.focus(); // foco no botão principal: no controle remoto basta apertar OK
+    }
+
+    function fecharModal() {
+        stopTimer();
+        clearTimeout(copyTimer);
+        overlay.hidden = true;
+        document.documentElement.classList.remove('modal-open');
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    /* ---------- Copiar link (com fallback para http / TV) ---------- */
+    function copiarFallback(texto) {
+        var ta = document.createElement('textarea');
+        ta.value = texto;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '0';
+        ta.style.left = '-9999px';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { ta.setSelectionRange(0, texto.length); } catch (e) {}
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        btnCopy.focus();
+        return ok;
+    }
+
+    function feedbackCopiar(sucesso) {
+        setBtn(btnCopy, sucesso ? 'fa-solid fa-check' : 'fa-solid fa-triangle-exclamation',
+               sucesso ? 'Link copiado!' : 'Não foi possível copiar');
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(function () {
+            setBtn(btnCopy, 'fa-regular fa-copy', 'Copiar link');
+        }, 2200);
+    }
+
+    function copiarLink() {
+        var url = currentUrl;
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(function () {
+                feedbackCopiar(true);
+            }, function () {
+                feedbackCopiar(copiarFallback(url));
+            });
+        } else {
+            feedbackCopiar(copiarFallback(url));
+        }
+    }
+
+    /* ---------- Eventos ---------- */
+    links.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            // Ctrl/Cmd/Shift/botão do meio: deixa o navegador agir normalmente
+            if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return;
+            e.preventDefault();
+            abrirModal(nomeDoLink(link), link.getAttribute('href'), link);
+        });
+    });
+
+    // Clique em "Baixar agora": navegação nativa pelo href; só atualiza a tela
+    btnNow.addEventListener('click', marcarIniciado);
+    btnCopy.addEventListener('click', copiarLink);
+    btnClose.addEventListener('click', fecharModal);
+    overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) fecharModal();
+    });
+
+    // Voltando pelo histórico (bfcache), não deixa o modal "preso" aberto
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted && !overlay.hidden) fecharModal();
+    });
+
+    /* ---------- Navegação por teclado / controle remoto ---------- */
+    var DIRS = {
+        ArrowRight: 'right', Right: 'right', 39: 'right',
+        ArrowLeft: 'left',   Left: 'left',   37: 'left',
+        ArrowDown: 'down',   Down: 'down',   40: 'down',
+        ArrowUp: 'up',       Up: 'up',       38: 'up'
+    };
+
+    function getDir(e) { return DIRS[e.key] || DIRS[e.keyCode] || null; }
+
+    function centro(el) {
+        var r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+
+    // Foco espacial: vai para o elemento mais próximo na direção pressionada
+    function mover(dir, lista) {
+        var atual = document.activeElement;
+        if (lista.indexOf(atual) < 0) { lista[0].focus(); return; }
+
+        var c = centro(atual), melhor = null, melhorScore = Infinity;
+        lista.forEach(function (el) {
+            if (el === atual) return;
+            var p = centro(el), dx = p.x - c.x, dy = p.y - c.y, ok, principal, cruzado;
+            if (dir === 'right')     { ok = dx > 5;  principal = dx;  cruzado = Math.abs(dy); }
+            else if (dir === 'left') { ok = dx < -5; principal = -dx; cruzado = Math.abs(dy); }
+            else if (dir === 'down') { ok = dy > 5;  principal = dy;  cruzado = Math.abs(dx); }
+            else                     { ok = dy < -5; principal = -dy; cruzado = Math.abs(dx); }
+            if (!ok) return;
+            var score = principal + cruzado * 3;
+            if (score < melhorScore) { melhorScore = score; melhor = el; }
+        });
+        if (melhor) melhor.focus();
+    }
+
+    document.addEventListener('keydown', function (e) {
+        var k = e.key, code = e.keyCode;
+        var dir = getDir(e);
+        var isEnter = k === 'Enter' || code === 13 || code === 23 || code === 66; // 23/66 = OK do controle (DPAD_CENTER)
+        var isBack = k === 'Escape' || k === 'Esc' || k === 'Backspace' || k === 'GoBack' || k === 'BrowserBack' ||
+                     code === 27 || code === 8 || code === 4 || code === 461 || code === 10009;
+
+        /* Modal aberto */
+        if (!overlay.hidden) {
+            if (isBack) { e.preventDefault(); fecharModal(); return; }
+
+            if (k === 'Tab') {
+                e.preventDefault();
+                var i = modalBtns.indexOf(document.activeElement);
+                i = e.shiftKey ? i - 1 : i + 1;
+                if (i < 0) i = modalBtns.length - 1;
+                if (i >= modalBtns.length) i = 0;
+                modalBtns[i].focus();
+                return;
+            }
+
+            if (dir) { e.preventDefault(); mover(dir, modalBtns); return; }
+
+            // Segurar OK não pode acionar o botão em repetição
+            if (isEnter && e.repeat) e.preventDefault();
+            return;
+        }
+
+        /* Lista de apps */
+        if (isEnter && !e.repeat) {
+            var idx = links.indexOf(document.activeElement);
+            if (idx > -1) {
+                e.preventDefault();
+                abrirModal(nomeDoLink(links[idx]), links[idx].getAttribute('href'), links[idx]);
+                return;
+            }
+        }
+
+        if (dir) {
+            e.preventDefault();
+            mover(dir, links);
+        }
+    });
+})();
 </script>
 
 </body>
