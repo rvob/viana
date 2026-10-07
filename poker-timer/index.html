@@ -178,7 +178,6 @@
       <label>Volume <input type="range" id="sndVol" min="0.3" max="1.6" step="0.1"></label>
     </div>
     <div class="row-actions">
-      <label class="chk"><input type="checkbox" id="sndVoice"> Anunciar os blinds por voz</label>
       <label class="chk"><input type="checkbox" id="sndTick"> Bipes nos últimos 5 segundos</label>
     </div>
     <div class="row-actions">
@@ -196,7 +195,7 @@
     <div class="row-actions">
       <button class="btn" id="addLevel">+ Nível</button>
       <button class="btn" id="addBreak">+ Intervalo</button>
-      <label style="flex-direction:row;align-items:center;gap:6px">Duração dos demais níveis:
+      <label style="flex-direction:row;align-items:center;gap:6px">Duração de todos:
         <input id="allMin" type="number" min="1" style="width:70px"> <button class="btn" id="applyAll">Aplicar</button></label>
     </div>
 
@@ -239,7 +238,7 @@
 const KEY = 'pokerTimer.v2';
 const L=(sb,bb,ante=0)=>({sb,bb,ante,min:10}), BRK={brk:true,min:10};
 const DEFAULT_LEVELS = [
-  {...L(5,10),min:15},L(10,20),L(15,30),L(20,40),BRK,
+  L(5,10),L(10,20),L(15,30),L(20,40),BRK,
   L(25,50),L(30,60),L(40,80),L(50,100),BRK,
   L(75,150),L(100,200),L(150,300),L(200,400),BRK,
   L(300,600),L(400,800),L(500,1000),L(800,1600),L(1000,2000)
@@ -252,17 +251,18 @@ function defaultChips(){
 
 let S = load() || fresh();
 // migração: 1º nível com 15 min + novas opções de som
-if(S.v!==3){
+if(S.v!==4){
+  // volta o 1º nível para 10 min (padrão), se ainda estiver com os 15 da versão anterior
   const fi=S.levels.findIndex(l=>!l.brk);
-  if(fi>=0 && S.levels[fi].min===10){ S.levels[fi].min=15; if(S.cur===fi && !S.running && !S.elapsed) S.remaining=15*60; }
-  Object.assign(S,{v:3, soundTheme:S.soundTheme||'cassino', volume:S.volume??1, voice:S.voice??true, tick5:S.tick5??true});
+  if(S.v===3 && fi>=0 && S.levels[fi].min===15){ S.levels[fi].min=10; if(S.cur===fi && !S.running && !S.elapsed) S.remaining=10*60; }
+  Object.assign(S,{v:4, soundTheme:S.soundTheme||'cassino', volume:S.volume??1, tick5:S.tick5??true});
   try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
 }
 function fresh(){
   return { name:'Torneio de Poker', levels:JSON.parse(JSON.stringify(DEFAULT_LEVELS)),
     cur:0, remaining:DEFAULT_LEVELS[0].min*60, running:false, endAt:0,
     stack:1000, entrants:6, left:6, rebuys:0, rebuyStack:1000, chips:defaultChips(),
-    elapsed:0, startedAt:0, sound:true, v:3, soundTheme:'cassino', volume:1, voice:true, tick5:true };
+    elapsed:0, startedAt:0, sound:true, v:4, soundTheme:'cassino', volume:1, tick5:true };
 }
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -353,25 +353,8 @@ function playSound(ev,arg){
   try{ const a=audio(); if(a){ const th=THEMES[S.soundTheme]||THEMES.cassino; th[ev]?.(a.currentTime+.03,arg); } }catch(e){}
   if(navigator.vibrate && VIB[ev]) navigator.vibrate(VIB[ev]);
 }
-function speak(text,delay=0){
-  if(!S.sound || !S.voice || !window.speechSynthesis) return;
-  setTimeout(()=>{
-    try{
-      const u=new SpeechSynthesisUtterance(text); u.lang='pt-BR'; u.volume=1; u.rate=.95;
-      const v=speechSynthesis.getVoices().find(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith('pt-br'))
-           || speechSynthesis.getVoices().find(v=>(v.lang||'').toLowerCase().startsWith('pt'));
-      if(v) u.voice=v; speechSynthesis.cancel(); speechSynthesis.speak(u);
-    }catch(e){}
-  },delay);
-}
-if(window.speechSynthesis) speechSynthesis.getVoices();
-function levelText(i){
-  const l=S.levels[i];
-  return l.brk ? `Intervalo de ${l.min} minutos.` :
-    `Subiram os blinds. Nível ${levelNumber(i)}. ${l.sb} e ${l.bb}${l.ante?`, ante ${l.ante}`:''}.`;
-}
 function levelAlert(){
-  const l=S.levels[S.cur]; playSound(l.brk?'brk':'level'); speak(levelText(S.cur), 2600);
+  const l=S.levels[S.cur]; playSound(l.brk?'brk':'level');
 }
 
 /* ---------- Tela sempre ligada ---------- */
@@ -461,9 +444,8 @@ function tick(){
       S.endAt=Date.now()+(S.levels[S.cur].min*60-over)*1000; r=remainingNow();
       levelAlert();
     }
-    if(r<=0 && S.cur===S.levels.length-1){ S.remaining=0; S.running=false; keepAwake(false); playSound('end'); speak('Fim da estrutura de blinds.',2000); }
-    if(r>0 && r<=60 && !warned){ warned=true; playSound('warn');
-      speak(S.levels[S.cur].brk?'Falta um minuto para acabar o intervalo.':'Falta um minuto para subir o blind.',1500); }
+    if(r<=0 && S.cur===S.levels.length-1){ S.remaining=0; S.running=false; keepAwake(false); playSound('end'); }
+    if(r>0 && r<=60 && !warned){ warned=true; playSound('warn'); }
     if(S.tick5 && r>0 && r<=5){ const sec=Math.ceil(r); if(sec!==lastSec){ lastSec=sec; playSound('tick',sec); } }
     else if(r>5) lastSec=null;
     S.elapsed=(Date.now()-S.startedAt)/1000;
@@ -528,8 +510,8 @@ let draft;
 function openCfg(){
   draft=JSON.parse(JSON.stringify(S.levels));
   $('cfgName').value=S.name; $('cfgStack').value=S.stack; $('cfgEntrants').value=S.entrants; $('cfgRebuyStack').value=S.rebuyStack;
-  $('allMin').value=(draft.filter(l=>!l.brk)[1]||{min:10}).min;
-  $('sndTheme').value=S.soundTheme; $('sndVol').value=S.volume; $('sndVoice').checked=S.voice; $('sndTick').checked=S.tick5;
+  $('allMin').value=(draft.find(l=>!l.brk)||{min:10}).min;
+  $('sndTheme').value=S.soundTheme; $('sndVol').value=S.volume; $('sndTick').checked=S.tick5;
   drawLevels(); $('modal').classList.add('open');
 }
 function drawLevels(){
@@ -552,7 +534,7 @@ $('levelsBody').addEventListener('click',e=>{ const d=e.target.dataset.del; if(d
 $('addLevel').onclick=()=>{ const last=[...draft].reverse().find(l=>!l.brk)||{sb:5,bb:10,ante:0,min:10};
   draft.push({sb:last.sb*2,bb:last.bb*2,ante:last.ante?last.ante*2:0,min:last.min}); drawLevels(); };
 $('addBreak').onclick=()=>{ draft.push({brk:true,min:10}); drawLevels(); };
-$('applyAll').onclick=()=>{ const m=Number($('allMin').value)||10; const fi=draft.findIndex(l=>!l.brk); draft.forEach((l,i)=>{ if(!l.brk && i!==fi) l.min=m; }); drawLevels(); };
+$('applyAll').onclick=()=>{ const m=Number($('allMin').value)||10; draft.forEach(l=>{ if(!l.brk) l.min=m; }); drawLevels(); };
 $('saveCfg').onclick=()=>{
   const wasRunning=S.running; if(wasRunning) pause();
   const curMinBefore=S.levels[S.cur]?.min;
@@ -579,15 +561,11 @@ $('modal').addEventListener('click',e=>{ if(e.target.id==='modal') $('modal').cl
 $('sndTheme').onchange=e=>{ S.soundTheme=e.target.value; save(); playSound('level'); };
 $('sndVol').oninput=e=>{ S.volume=Number(e.target.value); save(); if(master) master.gain.value=S.volume; };
 $('sndVol').onchange=()=>playSound('warn');
-$('sndVoice').onchange=e=>{ S.voice=e.target.checked; save(); if(S.voice) speak('Voz ativada.'); };
 $('sndTick').onchange=e=>{ S.tick5=e.target.checked; save(); };
 document.querySelectorAll('[data-test]').forEach(b=>b.onclick=()=>{
   const ev=b.dataset.test; if(!S.sound){ S.sound=true; save(); render(); }
   if(ev==='tick'){ [5,4,3,2,1].forEach((s,i)=>setTimeout(()=>playSound('tick',s),i*1000)); return; }
   playSound(ev);
-  if(ev==='level'){ const i=S.levels.findIndex((l,k)=>k>S.cur && !l.brk); speak(levelText(i>=0?i:S.cur),2600); }
-  if(ev==='brk') speak('Intervalo de 10 minutos.',2600);
-  if(ev==='warn') speak('Falta um minuto para subir o blind.',1500);
 });
 
 /* ---------- Divisão de fichas ---------- */
