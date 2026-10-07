@@ -32,7 +32,7 @@
   header{display:flex;justify-content:space-between;align-items:center;padding:10px 4px}
   header h1{font-size:1.1rem;letter-spacing:.5px}
   header h1 span{color:var(--gold)}
-  .icon-btn{background:transparent;border:1px solid var(--line);color:var(--text);
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;vertical-align:middle;background:transparent;border:1px solid var(--line);color:var(--text);
     border-radius:10px;padding:8px 12px;font-size:1rem;cursor:pointer;margin-left:6px}
   main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
   #levelLabel{font-size:clamp(1rem,3vw,1.6rem);color:var(--muted);text-transform:uppercase;letter-spacing:3px}
@@ -95,6 +95,10 @@
   #chipSummary .ok{color:#6fe39a} #chipSummary .bad{color:var(--red)} #chipSummary .big{font-size:1.2rem;font-weight:700}
   .give{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
   .give span{background:rgba(255,255,255,.06);border-radius:20px;padding:4px 10px;white-space:nowrap}
+  select{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px;font-size:1rem;width:100%}
+  input[type=range]{padding:0;accent-color:var(--gold);height:34px}
+  label.chk{flex-direction:row;align-items:center;gap:8px;font-size:.95rem;color:var(--text)}
+  label.chk input{width:22px;height:22px;accent-color:var(--gold)}
   .hint{font-size:.8rem;color:var(--muted);margin-top:8px}
   /* Tablet deitado / telas baixas: tudo cabe sem rolar */
   @media (orientation:landscape) and (min-width:700px){ .stats{grid-template-columns:repeat(6,1fr)} }
@@ -113,7 +117,7 @@
   <h1>♠ Poker <span>Timer</span></h1>
   <div>
     <button class="icon-btn" id="btnSound" title="Som">🔊</button>
-    <button class="icon-btn" id="btnFull" title="Tela cheia">⛶</button>
+    <button class="icon-btn" id="btnFull" title="Tela cheia"></button>
     <button class="icon-btn" id="btnChips" title="Divisão de fichas">🪙</button>
     <button class="icon-btn" id="btnSettings" title="Configurações">⚙️</button>
   </div>
@@ -162,6 +166,28 @@
       <label>Fichas por rebuy/add-on<input id="cfgRebuyStack" type="number" min="0"></label>
     </div>
 
+    <h3>Sons</h3>
+    <div class="grid2">
+      <label>Tipo de som
+        <select id="sndTheme">
+          <option value="cassino">🎰 Sino de cassino</option>
+          <option value="sirene">🚨 Sirene</option>
+          <option value="arcade">🕹️ Fanfarra arcade</option>
+          <option value="classico">🔔 Bipe clássico</option>
+        </select></label>
+      <label>Volume <input type="range" id="sndVol" min="0.3" max="1.6" step="0.1"></label>
+    </div>
+    <div class="row-actions">
+      <label class="chk"><input type="checkbox" id="sndVoice"> Anunciar os blinds por voz</label>
+      <label class="chk"><input type="checkbox" id="sndTick"> Bipes nos últimos 5 segundos</label>
+    </div>
+    <div class="row-actions">
+      <button class="btn" data-test="level">▶ Subida de nível</button>
+      <button class="btn" data-test="warn">▶ Falta 1 min</button>
+      <button class="btn" data-test="brk">▶ Intervalo</button>
+      <button class="btn" data-test="tick">▶ Contagem</button>
+    </div>
+
     <h3>Estrutura de blinds</h3>
     <table>
       <thead><tr><th>#</th><th>SB</th><th>BB</th><th>Ante</th><th>Min</th><th></th></tr></thead>
@@ -170,7 +196,7 @@
     <div class="row-actions">
       <button class="btn" id="addLevel">+ Nível</button>
       <button class="btn" id="addBreak">+ Intervalo</button>
-      <label style="flex-direction:row;align-items:center;gap:6px">Duração de todos:
+      <label style="flex-direction:row;align-items:center;gap:6px">Duração dos demais níveis:
         <input id="allMin" type="number" min="1" style="width:70px"> <button class="btn" id="applyAll">Aplicar</button></label>
     </div>
 
@@ -213,7 +239,7 @@
 const KEY = 'pokerTimer.v2';
 const L=(sb,bb,ante=0)=>({sb,bb,ante,min:10}), BRK={brk:true,min:10};
 const DEFAULT_LEVELS = [
-  L(5,10),L(10,20),L(15,30),L(20,40),BRK,
+  {...L(5,10),min:15},L(10,20),L(15,30),L(20,40),BRK,
   L(25,50),L(30,60),L(40,80),L(50,100),BRK,
   L(75,150),L(100,200),L(150,300),L(200,400),BRK,
   L(300,600),L(400,800),L(500,1000),L(800,1600),L(1000,2000)
@@ -225,11 +251,18 @@ function defaultChips(){
 }
 
 let S = load() || fresh();
+// migração: 1º nível com 15 min + novas opções de som
+if(S.v!==3){
+  const fi=S.levels.findIndex(l=>!l.brk);
+  if(fi>=0 && S.levels[fi].min===10){ S.levels[fi].min=15; if(S.cur===fi && !S.running && !S.elapsed) S.remaining=15*60; }
+  Object.assign(S,{v:3, soundTheme:S.soundTheme||'cassino', volume:S.volume??1, voice:S.voice??true, tick5:S.tick5??true});
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+}
 function fresh(){
   return { name:'Torneio de Poker', levels:JSON.parse(JSON.stringify(DEFAULT_LEVELS)),
     cur:0, remaining:DEFAULT_LEVELS[0].min*60, running:false, endAt:0,
     stack:1000, entrants:6, left:6, rebuys:0, rebuyStack:1000, chips:defaultChips(),
-    elapsed:0, startedAt:0, sound:true };
+    elapsed:0, startedAt:0, sound:true, v:3, soundTheme:'cassino', volume:1, voice:true, tick5:true };
 }
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -240,19 +273,105 @@ const mmss = s => { s=Math.max(0,Math.ceil(s)); const h=Math.floor(s/3600), m=Ma
   return (h? h+':'+String(m).padStart(2,'0') : String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0'); };
 
 /* ---------- Som ---------- */
-let ac;
-function beep(freq=880, dur=.2, times=1, gap=.25){
+// Sons sintetizados (sem arquivos): ondas quadradas/serra + sinos, passando por um compressor
+// para soarem bem mais altos sem distorcer.
+const AC = window.AudioContext||window.webkitAudioContext;
+let ac=null, master=null, lastSec=null;
+function audio(){
+  if(!AC) return null;
+  if(!ac){
+    ac=new AC();
+    const comp=ac.createDynamicsCompressor();
+    comp.threshold.value=-14; comp.knee.value=4; comp.ratio.value=10; comp.attack.value=.002; comp.release.value=.15;
+    const out=ac.createGain(); out.gain.value=1.4;
+    master=ac.createGain(); master.connect(comp); comp.connect(out); out.connect(ac.destination);
+  }
+  master.gain.value=S.volume??1;
+  if(ac.state==='suspended') ac.resume();
+  return ac;
+}
+document.addEventListener('pointerdown',()=>{ if(ac && ac.state==='suspended') ac.resume(); },{passive:true});
+const N = m => 440*Math.pow(2,(m-69)/12);
+function tone(f,t,d,{type='square',vol=.5,to=null,att=.008}={}){
+  const o=ac.createOscillator(), g=ac.createGain();
+  o.type=type; o.frequency.setValueAtTime(f,t); if(to) o.frequency.linearRampToValueAtTime(to,t+d);
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol,t+att);
+  g.gain.setValueAtTime(vol,t+Math.max(att,d*.75)); g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t+d+.05);
+}
+function bell(f,t,d=1.6,vol=.6){
+  [[1,1],[2,.55],[3,.35],[4.2,.25],[5.4,.18]].forEach(([k,a],i)=>{
+    const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.value=f*k;
+    g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(vol*a,t+.004);
+    g.gain.exponentialRampToValueAtTime(.0001,t+d/(1+i*.6)); o.connect(g); g.connect(master); o.start(t); o.stop(t+d+.05);
+  });
+  tone(f,t,.09,{type:'square',vol:vol*.35}); // "ataque" metálico para cortar o barulho da mesa
+}
+const tickSnd=(t,sec,f1=1200,f2=1760)=>tone(sec===1?f2:f1,t,sec===1?.35:.1,{vol:.7});
+const THEMES={
+  cassino:{
+    start:t=>{ bell(N(84),t,1.2); },
+    level:t=>{ for(let r=0;r<2;r++) [72,76,79,84].forEach((m,i)=>bell(N(m),t+r*.75+i*.13,1.1,.55));
+               [84,88,91,96].forEach(m=>bell(N(m),t+1.6,2.4,.45)); },
+    warn:t=>{ for(let r=0;r<3;r++){ bell(N(88),t+r*.9,1.2,.7); bell(N(81),t+r*.9+.4,1.4,.7); } },
+    brk:t=>{ const sc=[72,74,76,79,81,84,86,88,91,93,96];
+             for(let i=0;i<22;i++) bell(N(sc[(i*7)%sc.length]),t+i*.07,.6,.45);
+             [84,88,91].forEach(m=>bell(N(m),t+1.7,2.5,.5)); },
+    end:t=>{ [96,91,88,84,79,76,72].forEach((m,i)=>bell(N(m),t+i*.22,1.6,.6)); },
+    tick:(t,s)=>tickSnd(t,s)
+  },
+  sirene:{
+    start:t=>tone(500,t,.35,{type:'sawtooth',to:1300,vol:.5}),
+    level:t=>{ for(let i=0;i<4;i++){ tone(500,t+i*.9,.45,{type:'sawtooth',to:1400,vol:.6}); tone(1400,t+i*.9+.45,.45,{type:'sawtooth',to:500,vol:.6});
+               tone(1000,t+i*.9,.45,{type:'square',to:2800,vol:.2}); tone(2800,t+i*.9+.45,.45,{type:'square',to:1000,vol:.2}); } },
+    warn:t=>{ for(let i=0;i<5;i++){ tone(960,t+i*.6,.3,{vol:.65}); tone(770,t+i*.6+.3,.3,{vol:.65}); } },
+    brk:t=>{ for(let i=0;i<3;i++){ tone(400,t+i*1.2,.6,{type:'sawtooth',to:900,vol:.6}); tone(900,t+i*1.2+.6,.6,{type:'sawtooth',to:400,vol:.6}); } },
+    end:t=>{ for(let i=0;i<6;i++){ tone(450,t+i*.8,.4,{type:'sawtooth',to:1500,vol:.65}); tone(1500,t+i*.8+.4,.4,{type:'sawtooth',to:450,vol:.65}); } },
+    tick:(t,s)=>tickSnd(t,s,1000,1500)
+  },
+  arcade:{
+    start:t=>{ tone(N(83),t,.08,{vol:.5}); tone(N(88),t+.08,.4,{vol:.5}); },
+    level:t=>{ for(let r=0;r<2;r++) [60,64,67,72,76,79,84].forEach((m,i)=>tone(N(m+r*12),t+r*.6+i*.07,.09,{vol:.55}));
+               tone(N(96),t+1.25,.8,{vol:.55}); tone(N(91),t+1.25,.8,{type:'sawtooth',vol:.3}); },
+    warn:t=>{ for(let r=0;r<3;r++) [0,1,2].forEach(i=>tone(1320,t+r*.8+i*.13,.09,{vol:.7})); },
+    brk:t=>{ for(let r=0;r<3;r++){ tone(N(83),t+r*.6,.08,{vol:.6}); tone(N(88),t+r*.6+.08,.45,{vol:.6}); } },
+    end:t=>{ [67,64,60,55,48].forEach((m,i)=>tone(N(m),t+i*.3,.35,{type:'sawtooth',vol:.6})); },
+    tick:(t,s)=>tickSnd(t,s,880,1320)
+  },
+  classico:{
+    start:t=>tone(660,t,.15,{vol:.6}),
+    level:t=>{ for(let i=0;i<4;i++) tone(988,t+i*.45,.35,{vol:.7}); },
+    warn:t=>{ for(let i=0;i<3;i++) tone(880,t+i*.35,.2,{vol:.7}); },
+    brk:t=>{ for(let i=0;i<4;i++) tone(520,t+i*.45,.35,{vol:.7}); },
+    end:t=>{ for(let i=0;i<3;i++) tone(440,t+i*.7,.55,{vol:.7}); },
+    tick:(t,s)=>tickSnd(t,s,1000,1400)
+  }
+};
+const VIB={level:[400,150,400,150,800],brk:[300,100,300],warn:[200,100,200],end:[800,200,800],tick:[60],start:[100]};
+function playSound(ev,arg){
   if(!S.sound) return;
-  try{
-    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
-    for(let i=0;i<times;i++){
-      const o=ac.createOscillator(), g=ac.createGain(), t=ac.currentTime+i*gap;
-      o.type='sine'; o.frequency.value=freq; o.connect(g); g.connect(ac.destination);
-      g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.5,t+.02);
-      g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.start(t); o.stop(t+dur+.05);
-    }
-  }catch(e){}
-  if(navigator.vibrate) navigator.vibrate(times>1?[200,100,200,100,400]:200);
+  try{ const a=audio(); if(a){ const th=THEMES[S.soundTheme]||THEMES.cassino; th[ev]?.(a.currentTime+.03,arg); } }catch(e){}
+  if(navigator.vibrate && VIB[ev]) navigator.vibrate(VIB[ev]);
+}
+function speak(text,delay=0){
+  if(!S.sound || !S.voice || !window.speechSynthesis) return;
+  setTimeout(()=>{
+    try{
+      const u=new SpeechSynthesisUtterance(text); u.lang='pt-BR'; u.volume=1; u.rate=.95;
+      const v=speechSynthesis.getVoices().find(v=>(v.lang||'').toLowerCase().replace('_','-').startsWith('pt-br'))
+           || speechSynthesis.getVoices().find(v=>(v.lang||'').toLowerCase().startsWith('pt'));
+      if(v) u.voice=v; speechSynthesis.cancel(); speechSynthesis.speak(u);
+    }catch(e){}
+  },delay);
+}
+if(window.speechSynthesis) speechSynthesis.getVoices();
+function levelText(i){
+  const l=S.levels[i];
+  return l.brk ? `Intervalo de ${l.min} minutos.` :
+    `Subiram os blinds. Nível ${levelNumber(i)}. ${l.sb} e ${l.bb}${l.ante?`, ante ${l.ante}`:''}.`;
+}
+function levelAlert(){
+  const l=S.levels[S.cur]; playSound(l.brk?'brk':'level'); speak(levelText(S.cur), 2600);
 }
 
 /* ---------- Tela sempre ligada ---------- */
@@ -297,7 +416,10 @@ function enterFull(){
 }
 function exitFull(){ try{ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} }
 function toggleFull(){ isFull() ? exitFull() : enterFull(); }
-function updFullBtn(){ const b=$('btnFull'); b.style.display=fsSupported?'':'none'; b.textContent=isFull()?'🗗':'⛶'; b.title=isFull()?'Sair da tela cheia':'Tela cheia'; }
+const svgI=d=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display:block">${d}</svg>`;
+const ICON_ENTER=svgI('<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/>');
+const ICON_EXIT =svgI('<path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/>');
+function updFullBtn(){ const b=$('btnFull'); b.style.display=fsSupported?'':'none'; b.innerHTML=isFull()?ICON_EXIT:ICON_ENTER; b.title=isFull()?'Sair da tela cheia':'Tela cheia'; }
 document.addEventListener('fullscreenchange',()=>{ updFullBtn(); if(awakeWanted()) keepAwake(true); });
 document.addEventListener('webkitfullscreenchange',updFullBtn);
 
@@ -310,7 +432,7 @@ function start(){
   S.running=true; S.endAt=Date.now()+S.remaining*1000;
   if(!S.startedAt) S.startedAt=Date.now()-S.elapsed*1000; else S.startedAt=Date.now()-S.elapsed*1000;
   keepAwake(true); if(fsSupported && !isFull() && !installedFull()) enterFull();
-  beep(660,.12); save(); render();
+  playSound('start'); save(); render();
 }
 function pause(){
   if(!S.running) return;
@@ -321,7 +443,7 @@ function goto(i, auto=false){
   if(i<0 || i>=S.levels.length) return;
   S.cur=i; S.remaining=S.levels[i].min*60; warned=false;
   if(S.running) S.endAt=Date.now()+S.remaining*1000;
-  if(auto) beep(S.levels[i].brk?520:988,.35,3,.4);
+  lastSec=null; if(auto) levelAlert();
   save(); render();
 }
 function addTime(sec){
@@ -337,10 +459,13 @@ function tick(){
     while(r<=0 && S.cur<S.levels.length-1){
       const over=-r; S.cur++; warned=false;
       S.endAt=Date.now()+(S.levels[S.cur].min*60-over)*1000; r=remainingNow();
-      beep(S.levels[S.cur].brk?520:988,.35,3,.4);
+      levelAlert();
     }
-    if(r<=0 && S.cur===S.levels.length-1){ S.remaining=0; S.running=false; keepAwake(false); beep(440,.5,3,.6); }
-    if(r>0 && r<=60 && !warned){ warned=true; beep(880,.15,2,.25); }
+    if(r<=0 && S.cur===S.levels.length-1){ S.remaining=0; S.running=false; keepAwake(false); playSound('end'); speak('Fim da estrutura de blinds.',2000); }
+    if(r>0 && r<=60 && !warned){ warned=true; playSound('warn');
+      speak(S.levels[S.cur].brk?'Falta um minuto para acabar o intervalo.':'Falta um minuto para subir o blind.',1500); }
+    if(S.tick5 && r>0 && r<=5){ const sec=Math.ceil(r); if(sec!==lastSec){ lastSec=sec; playSound('tick',sec); } }
+    else if(r>5) lastSec=null;
     S.elapsed=(Date.now()-S.startedAt)/1000;
   }
   render(r);
@@ -386,7 +511,7 @@ $('plMinus').onclick=()=>{ if(S.left>1){S.left--; save(); render();} };
 $('plPlus').onclick=()=>{ if(S.left<S.entrants){S.left++; save(); render();} };
 $('rbMinus').onclick=()=>{ if(S.rebuys>0){S.rebuys--; save(); render();} };
 $('rbPlus').onclick=()=>{ S.rebuys++; save(); render(); };
-$('btnSound').onclick=()=>{ S.sound=!S.sound; save(); render(); if(S.sound) beep(); };
+$('btnSound').onclick=()=>{ S.sound=!S.sound; save(); render(); if(S.sound) playSound('start'); };
 $('btnFull').onclick=toggleFull;
 document.addEventListener('keydown',e=>{
   if($('modal').classList.contains('open')||$('chipModal').classList.contains('open')) return;
@@ -403,7 +528,8 @@ let draft;
 function openCfg(){
   draft=JSON.parse(JSON.stringify(S.levels));
   $('cfgName').value=S.name; $('cfgStack').value=S.stack; $('cfgEntrants').value=S.entrants; $('cfgRebuyStack').value=S.rebuyStack;
-  $('allMin').value=(draft.find(l=>!l.brk)||{min:10}).min;
+  $('allMin').value=(draft.filter(l=>!l.brk)[1]||{min:10}).min;
+  $('sndTheme').value=S.soundTheme; $('sndVol').value=S.volume; $('sndVoice').checked=S.voice; $('sndTick').checked=S.tick5;
   drawLevels(); $('modal').classList.add('open');
 }
 function drawLevels(){
@@ -426,7 +552,7 @@ $('levelsBody').addEventListener('click',e=>{ const d=e.target.dataset.del; if(d
 $('addLevel').onclick=()=>{ const last=[...draft].reverse().find(l=>!l.brk)||{sb:5,bb:10,ante:0,min:10};
   draft.push({sb:last.sb*2,bb:last.bb*2,ante:last.ante?last.ante*2:0,min:last.min}); drawLevels(); };
 $('addBreak').onclick=()=>{ draft.push({brk:true,min:10}); drawLevels(); };
-$('applyAll').onclick=()=>{ const m=Number($('allMin').value)||10; draft.forEach(l=>{ if(!l.brk) l.min=m; }); drawLevels(); };
+$('applyAll').onclick=()=>{ const m=Number($('allMin').value)||10; const fi=draft.findIndex(l=>!l.brk); draft.forEach((l,i)=>{ if(!l.brk && i!==fi) l.min=m; }); drawLevels(); };
 $('saveCfg').onclick=()=>{
   const wasRunning=S.running; if(wasRunning) pause();
   const curMinBefore=S.levels[S.cur]?.min;
@@ -448,6 +574,21 @@ $('resetTourney').onclick=()=>{
 $('resetStructure').onclick=()=>{ if(confirm('Substituir pela estrutura padrão?')){ draft=JSON.parse(JSON.stringify(DEFAULT_LEVELS)); drawLevels(); } };
 $('btnSettings').onclick=openCfg;
 $('modal').addEventListener('click',e=>{ if(e.target.id==='modal') $('modal').classList.remove('open'); });
+
+/* ---------- Config de sons ---------- */
+$('sndTheme').onchange=e=>{ S.soundTheme=e.target.value; save(); playSound('level'); };
+$('sndVol').oninput=e=>{ S.volume=Number(e.target.value); save(); if(master) master.gain.value=S.volume; };
+$('sndVol').onchange=()=>playSound('warn');
+$('sndVoice').onchange=e=>{ S.voice=e.target.checked; save(); if(S.voice) speak('Voz ativada.'); };
+$('sndTick').onchange=e=>{ S.tick5=e.target.checked; save(); };
+document.querySelectorAll('[data-test]').forEach(b=>b.onclick=()=>{
+  const ev=b.dataset.test; if(!S.sound){ S.sound=true; save(); render(); }
+  if(ev==='tick'){ [5,4,3,2,1].forEach((s,i)=>setTimeout(()=>playSound('tick',s),i*1000)); return; }
+  playSound(ev);
+  if(ev==='level'){ const i=S.levels.findIndex((l,k)=>k>S.cur && !l.brk); speak(levelText(i>=0?i:S.cur),2600); }
+  if(ev==='brk') speak('Intervalo de 10 minutos.',2600);
+  if(ev==='warn') speak('Falta um minuto para subir o blind.',1500);
+});
 
 /* ---------- Divisão de fichas ---------- */
 if(!S.chips) S.chips=defaultChips();

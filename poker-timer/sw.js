@@ -1,5 +1,5 @@
 // Troque a versão sempre que atualizar os arquivos no GitHub
-const CACHE = 'poker-timer-v4';
+const CACHE = 'poker-timer-v6';
 const FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-512-maskable.png', './favicon.ico', './favicon-32.png', './apple-touch-icon.png', './nosleep.min.js'];
 
 self.addEventListener('install', e => {
