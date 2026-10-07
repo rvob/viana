@@ -1,1 +1,548 @@
-asd
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Poker Timer</title>
+<meta name="theme-color" content="#0b3d2e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="nosleep.min.js"></script>
+<style>
+  :root{
+    --bg:#06281e; --felt:#0b3d2e; --card:#0f4a38; --line:#1d6b52;
+    --text:#f2f5f3; --muted:#9cc2b4; --gold:#f5c542; --red:#ff5a5a; --blue:#5ab0ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overscroll-behavior:none}
+  :fullscreen body,body.standalone{cursor:default}
+  body{
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(ellipse at center,var(--felt) 0%,var(--bg) 75%);
+    color:var(--text); display:flex; flex-direction:column; min-height:100vh; min-height:100dvh;
+    padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom);
+    user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  header{display:flex;justify-content:space-between;align-items:center;padding:10px 4px}
+  header h1{font-size:1.1rem;letter-spacing:.5px}
+  header h1 span{color:var(--gold)}
+  .icon-btn{background:transparent;border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:8px 12px;font-size:1rem;cursor:pointer;margin-left:6px}
+  main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+  #levelLabel{font-size:clamp(1rem,3vw,1.6rem);color:var(--muted);text-transform:uppercase;letter-spacing:3px}
+  #timer{font-size:clamp(3.5rem,min(22vw,30vh),18rem);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;
+    text-shadow:0 4px 30px rgba(0,0,0,.4);transition:color .3s}
+  #timer.warn{color:var(--gold)}
+  #timer.end{color:var(--red);animation:pulse 1s infinite}
+  #timer.paused{opacity:.45}
+  @keyframes pulse{50%{opacity:.4}}
+  .progress{width:min(900px,100%);height:8px;background:rgba(255,255,255,.1);border-radius:8px;overflow:hidden}
+  .progress div{height:100%;background:var(--gold);width:0;transition:width .5s linear}
+  #blinds{font-size:clamp(2rem,min(9vw,11vh),7rem);font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+  #blinds.break{color:var(--blue)}
+  #ante{font-size:clamp(1rem,3.5vw,2rem);color:var(--muted);min-height:1.2em}
+  #next{font-size:clamp(.95rem,2.8vw,1.4rem);color:var(--muted)}
+  #next b{color:var(--text)}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+  .btn{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:14px;
+    padding:14px 20px;font-size:1.05rem;font-weight:600;cursor:pointer;min-width:64px}
+  .btn:active{transform:scale(.96)}
+  .btn.primary{background:var(--gold);color:#222;border-color:var(--gold);min-width:150px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;width:min(900px,100%);margin:10px auto 14px}
+  .stat{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;padding:10px}
+  .stat small{display:block;color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:1px}
+  .stat strong{font-size:1.35rem;font-variant-numeric:tabular-nums}
+  .stat .adj{display:flex;align-items:center;justify-content:center;gap:10px}
+  .stat .adj button{background:var(--card);border:1px solid var(--line);color:var(--text);
+    width:34px;height:34px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+  .hl strong{color:var(--gold)}
+
+  /* Modal */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-start;justify-content:center;
+    padding:20px 10px;overflow:auto;z-index:10}
+  .modal.open{display:flex}
+  .sheet{background:var(--felt);border:1px solid var(--line);border-radius:16px;width:min(720px,100%);padding:16px}
+  .sheet h2{font-size:1.2rem;margin-bottom:12px}
+  .sheet h3{font-size:.95rem;color:var(--muted);margin:16px 0 8px;text-transform:uppercase;letter-spacing:1px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{font-size:.85rem;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+  input{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px;font-size:1rem;width:100%}
+  table{width:100%;border-collapse:collapse;font-size:.9rem}
+  th{color:var(--muted);font-weight:500;text-align:left;padding:4px}
+  td{padding:3px}
+  td input{padding:6px}
+  tr.brk td{background:rgba(90,176,255,.08)}
+  tr.cur td:first-child{color:var(--gold);font-weight:700}
+  .del{background:transparent;border:none;color:var(--red);font-size:1.1rem;cursor:pointer}
+  .row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .sheet .btn{padding:10px 14px;font-size:.95rem}
+  .footer-actions{display:flex;justify-content:space-between;gap:8px;margin-top:16px;flex-wrap:wrap}
+  .danger{border-color:var(--red)!important;color:var(--red)!important}
+  .chip{display:inline-block;width:26px;height:26px;border-radius:50%;border:4px dashed rgba(255,255,255,.85);
+    box-shadow:0 0 0 2px rgba(0,0,0,.4);vertical-align:middle}
+  .chip-sm{width:18px;height:18px;border-width:3px;margin-right:4px}
+  td .cnt{display:flex;align-items:center;gap:6px;justify-content:center}
+  td .cnt button{background:var(--card);border:1px solid var(--line);color:var(--text);width:30px;height:30px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+  td .cnt strong{min-width:26px;text-align:center;font-size:1.1rem}
+  input[type=color]{padding:0;height:34px;width:42px;border-radius:8px}
+  #chipSummary{margin-top:14px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:12px;padding:12px;line-height:1.7}
+  #chipSummary .ok{color:#6fe39a} #chipSummary .bad{color:var(--red)} #chipSummary .big{font-size:1.2rem;font-weight:700}
+  .give{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+  .give span{background:rgba(255,255,255,.06);border-radius:20px;padding:4px 10px;white-space:nowrap}
+  .hint{font-size:.8rem;color:var(--muted);margin-top:8px}
+  /* Tablet deitado / telas baixas: tudo cabe sem rolar */
+  @media (orientation:landscape) and (min-width:700px){ .stats{grid-template-columns:repeat(6,1fr)} }
+  @media (max-height:760px){
+    header{padding:6px 4px} main{gap:6px}
+    .controls{margin-top:2px} .controls .btn{padding:10px 16px}
+    .stats{margin:6px auto 8px;gap:8px} .stat{padding:6px}
+    .stat strong{font-size:1.1rem} .stat .adj button{width:28px;height:28px}
+    #ante:empty{display:none}
+  }
+  @media (max-width:520px){ .controls .btn{padding:12px 14px} .grid2{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header>
+  <h1>♠ Poker <span>Timer</span></h1>
+  <div>
+    <button class="icon-btn" id="btnSound" title="Som">🔊</button>
+    <button class="icon-btn" id="btnFull" title="Tela cheia">⛶</button>
+    <button class="icon-btn" id="btnChips" title="Divisão de fichas">🪙</button>
+    <button class="icon-btn" id="btnSettings" title="Configurações">⚙️</button>
+  </div>
+</header>
+
+<main>
+  <div id="levelLabel">Nível 1</div>
+  <div id="timer" class="paused">15:00</div>
+  <div class="progress"><div id="bar"></div></div>
+  <div id="blinds">25 / 50</div>
+  <div id="ante"></div>
+  <div id="next">Próximo: <b>50 / 100</b></div>
+  <div class="controls">
+    <button class="btn" id="btnPrev" title="Nível anterior">⏮</button>
+    <button class="btn" id="btnMinus" title="-1 minuto">−1m</button>
+    <button class="btn primary" id="btnPlay">▶ Iniciar</button>
+    <button class="btn" id="btnPlus" title="+1 minuto">+1m</button>
+    <button class="btn" id="btnNext" title="Próximo nível">⏭</button>
+  </div>
+</main>
+
+<section class="stats">
+  <div class="stat">
+    <small>Jogadores</small>
+    <div class="adj"><button id="plMinus">−</button><strong id="players">0/0</strong><button id="plPlus">+</button></div>
+  </div>
+  <div class="stat">
+    <small>Rebuys / Add-ons</small>
+    <div class="adj"><button id="rbMinus">−</button><strong id="rebuys">0</strong><button id="rbPlus">+</button></div>
+  </div>
+  <div class="stat"><small>Fichas em jogo</small><strong id="chips">0</strong></div>
+  <div class="stat"><small>Stack médio</small><strong id="avg">0</strong></div>
+  <div class="stat hl"><small>Média em BB</small><strong id="avgBB">0 BB</strong></div>
+  <div class="stat"><small>Tempo total</small><strong id="elapsed">00:00</strong></div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h2>⚙️ Configurações do torneio</h2>
+
+    <h3>Torneio</h3>
+    <div class="grid2">
+      <label>Nome do torneio<input id="cfgName" type="text"></label>
+      <label>Stack inicial<input id="cfgStack" type="number" min="0"></label>
+      <label>Jogadores inscritos<input id="cfgEntrants" type="number" min="0"></label>
+      <label>Fichas por rebuy/add-on<input id="cfgRebuyStack" type="number" min="0"></label>
+    </div>
+
+    <h3>Estrutura de blinds</h3>
+    <table>
+      <thead><tr><th>#</th><th>SB</th><th>BB</th><th>Ante</th><th>Min</th><th></th></tr></thead>
+      <tbody id="levelsBody"></tbody>
+    </table>
+    <div class="row-actions">
+      <button class="btn" id="addLevel">+ Nível</button>
+      <button class="btn" id="addBreak">+ Intervalo</button>
+      <label style="flex-direction:row;align-items:center;gap:6px">Duração de todos:
+        <input id="allMin" type="number" min="1" style="width:70px"> <button class="btn" id="applyAll">Aplicar</button></label>
+    </div>
+
+    <div class="footer-actions">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn danger" id="resetTourney">Reiniciar torneio</button>
+        <button class="btn danger" id="resetStructure">Estrutura padrão</button>
+      </div>
+      <button class="btn primary" id="saveCfg">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="chipModal">
+  <div class="sheet">
+    <h2>🪙 Divisão de fichas</h2>
+    <div class="grid2">
+      <label>Jogadores<input id="chPlayers" type="number" min="1"></label>
+      <label>Stack por jogador<input id="chStack" type="number" min="0" step="5"></label>
+    </div>
+    <h3>Fichas</h3>
+    <table>
+      <thead><tr><th>Valor</th><th>Cor</th><th>Na maleta</th><th style="text-align:center">Por jogador</th><th>Total</th><th></th></tr></thead>
+      <tbody id="chipBody"></tbody>
+    </table>
+    <div class="row-actions">
+      <button class="btn" id="chAdd">+ Ficha</button>
+      <button class="btn primary" id="chAuto">✨ Sugerir divisão</button>
+    </div>
+    <p class="hint">"Na maleta" é opcional: informe quantas fichas de cada valor você tem para o app não sugerir mais do que existe. Ajuste a quantidade por jogador com − e +.</p>
+    <div id="chipSummary"></div>
+    <div class="footer-actions">
+      <button class="btn" id="chApply">Usar no torneio</button>
+      <button class="btn primary" id="chClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY = 'pokerTimer.v2';
+const L=(sb,bb,ante=0)=>({sb,bb,ante,min:10}), BRK={brk:true,min:10};
+const DEFAULT_LEVELS = [
+  L(5,10),L(10,20),L(15,30),L(20,40),BRK,
+  L(25,50),L(30,60),L(40,80),L(50,100),BRK,
+  L(75,150),L(100,200),L(150,300),L(200,400),BRK,
+  L(300,600),L(400,800),L(500,1000),L(800,1600),L(1000,2000)
+];
+function defaultChips(){
+  return { players:6, stack:1000, denoms:[
+    {v:5,color:'#f2f2f2',qty:0},{v:10,color:'#d93636',qty:0},{v:20,color:'#2f9e57',qty:0},
+    {v:50,color:'#2f6fd9',qty:0},{v:100,color:'#1a1a1a',qty:0}], counts:[8,9,6,5,5] };
+}
+
+let S = load() || fresh();
+function fresh(){
+  return { name:'Torneio de Poker', levels:JSON.parse(JSON.stringify(DEFAULT_LEVELS)),
+    cur:0, remaining:DEFAULT_LEVELS[0].min*60, running:false, endAt:0,
+    stack:1000, entrants:6, left:6, rebuys:0, rebuyStack:1000, chips:defaultChips(),
+    elapsed:0, startedAt:0, sound:true };
+}
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n||0).toLocaleString('pt-BR');
+const mmss = s => { s=Math.max(0,Math.ceil(s)); const h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60;
+  return (h? h+':'+String(m).padStart(2,'0') : String(m).padStart(2,'0'))+':'+String(x).padStart(2,'0'); };
+
+/* ---------- Som ---------- */
+let ac;
+function beep(freq=880, dur=.2, times=1, gap=.25){
+  if(!S.sound) return;
+  try{
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    for(let i=0;i<times;i++){
+      const o=ac.createOscillator(), g=ac.createGain(), t=ac.currentTime+i*gap;
+      o.type='sine'; o.frequency.value=freq; o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.5,t+.02);
+      g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.start(t); o.stop(t+dur+.05);
+    }
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate(times>1?[200,100,200,100,400]:200);
+}
+
+/* ---------- Tela sempre ligada ---------- */
+// Mantém a tela acesa enquanto o torneio estiver em andamento (rodando ou pausado).
+// 1º tenta a Wake Lock API nativa; se não existir/falhar, usa NoSleep (vídeo invisível em loop).
+let wakeLock=null;
+const noSleep = window.NoSleep ? new NoSleep() : null;
+const awakeWanted = () => S.running || S.elapsed>0;
+async function keepAwake(on){
+  if(on){
+    let ok=false;
+    if('wakeLock' in navigator){
+      try{
+        if(!wakeLock){
+          wakeLock = await navigator.wakeLock.request('screen');
+          wakeLock.addEventListener('release',()=>{ wakeLock=null; });
+        }
+        ok=true;
+      }catch(e){}
+    }
+    if(!ok && noSleep && !noSleep.isEnabled){ try{ await noSleep.enable(); }catch(e){} }
+  }else{
+    try{ if(wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){}
+    try{ if(noSleep && noSleep.isEnabled) noSleep.disable(); }catch(e){}
+  }
+}
+// O sistema solta o bloqueio quando o app vai para segundo plano: pede de novo ao voltar
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible' && awakeWanted()) keepAwake(true); });
+// Qualquer toque garante o bloqueio (alguns tablets só liberam após um toque)
+document.addEventListener('pointerdown',()=>{ if(awakeWanted()) keepAwake(true); },{passive:true});
+
+/* ---------- Tela cheia ---------- */
+const isFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+const fsSupported = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+const installedFull = () => matchMedia('(display-mode: fullscreen)').matches;
+function enterFull(){
+  const el=document.documentElement;
+  try{
+    const r = el.requestFullscreen ? el.requestFullscreen({navigationUI:'hide'}) : el.webkitRequestFullscreen?.();
+    r?.then?.(()=>{ try{ screen.orientation?.lock?.(screen.orientation.type).catch(()=>{}); }catch(e){} }).catch(()=>{});
+  }catch(e){}
+}
+function exitFull(){ try{ (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} }
+function toggleFull(){ isFull() ? exitFull() : enterFull(); }
+function updFullBtn(){ const b=$('btnFull'); b.style.display=fsSupported?'':'none'; b.textContent=isFull()?'🗗':'⛶'; b.title=isFull()?'Sair da tela cheia':'Tela cheia'; }
+document.addEventListener('fullscreenchange',()=>{ updFullBtn(); if(awakeWanted()) keepAwake(true); });
+document.addEventListener('webkitfullscreenchange',updFullBtn);
+
+/* ---------- Timer ---------- */
+let warned=false;
+function remainingNow(){ return S.running ? (S.endAt-Date.now())/1000 : S.remaining; }
+
+function start(){
+  if(S.running) return;
+  S.running=true; S.endAt=Date.now()+S.remaining*1000;
+  if(!S.startedAt) S.startedAt=Date.now()-S.elapsed*1000; else S.startedAt=Date.now()-S.elapsed*1000;
+  keepAwake(true); if(fsSupported && !isFull() && !installedFull()) enterFull();
+  beep(660,.12); save(); render();
+}
+function pause(){
+  if(!S.running) return;
+  S.remaining=Math.max(0,remainingNow()); S.elapsed=(Date.now()-S.startedAt)/1000;
+  S.running=false; keepAwake(true); save(); render();
+}
+function goto(i, auto=false){
+  if(i<0 || i>=S.levels.length) return;
+  S.cur=i; S.remaining=S.levels[i].min*60; warned=false;
+  if(S.running) S.endAt=Date.now()+S.remaining*1000;
+  if(auto) beep(S.levels[i].brk?520:988,.35,3,.4);
+  save(); render();
+}
+function addTime(sec){
+  if(S.running) S.endAt+=sec*1000; else S.remaining=Math.max(0,S.remaining+sec);
+  if(remainingNow()>60) warned=false;
+  save(); render();
+}
+
+function tick(){
+  let r=remainingNow();
+  if(S.running){
+    // avança níveis (também cobre tempo passado com app em segundo plano)
+    while(r<=0 && S.cur<S.levels.length-1){
+      const over=-r; S.cur++; warned=false;
+      S.endAt=Date.now()+(S.levels[S.cur].min*60-over)*1000; r=remainingNow();
+      beep(S.levels[S.cur].brk?520:988,.35,3,.4);
+    }
+    if(r<=0 && S.cur===S.levels.length-1){ S.remaining=0; S.running=false; keepAwake(false); beep(440,.5,3,.6); }
+    if(r>0 && r<=60 && !warned){ warned=true; beep(880,.15,2,.25); }
+    S.elapsed=(Date.now()-S.startedAt)/1000;
+  }
+  render(r);
+}
+
+/* ---------- Render ---------- */
+function blindText(l){ return l.brk ? 'INTERVALO' : fmt(l.sb)+' / '+fmt(l.bb); }
+function levelNumber(i){ let n=0; for(let k=0;k<=i;k++) if(!S.levels[k].brk) n++; return n; }
+
+function render(r=remainingNow()){
+  const l=S.levels[S.cur]; if(!l) return;
+  document.title=(S.running?mmss(r)+' · ':'')+S.name;
+  $('levelLabel').textContent = l.brk ? '☕ Intervalo' : S.name+' · Nível '+levelNumber(S.cur);
+  const t=$('timer'); t.textContent=mmss(r);
+  t.className = !S.running ? 'paused' : r<=10 ? 'end' : r<=60 ? 'warn' : '';
+  const total=l.min*60; $('bar').style.width = total? (100-Math.max(0,r)/total*100)+'%' : '0';
+  const b=$('blinds'); b.textContent=blindText(l); b.className=l.brk?'break':'';
+  $('ante').textContent = (!l.brk && l.ante>0) ? 'Ante: '+fmt(l.ante) : '';
+  let nx=S.levels[S.cur+1];
+  $('next').innerHTML = nx ? 'Próximo: <b>'+blindText(nx)+(nx.brk?' ('+nx.min+' min)':(nx.ante?' · ante '+fmt(nx.ante):''))+'</b>' : '<b>Último nível</b>';
+  $('btnPlay').textContent = S.running ? '⏸ Pausar' : (S.elapsed>0 ? '▶ Continuar' : '▶ Iniciar');
+  $('btnSound').textContent = S.sound ? '🔊' : '🔇';
+
+  const chips = S.entrants*S.stack + S.rebuys*S.rebuyStack;
+  const avg = S.left>0 ? chips/S.left : 0;
+  let bb = l.brk ? (S.levels.slice(S.cur).find(x=>!x.brk)||{}).bb : l.bb;
+  if(!bb){ const prev=[...S.levels.slice(0,S.cur)].reverse().find(x=>!x.brk); bb=prev?prev.bb:0; }
+  $('players').textContent=S.left+'/'+S.entrants;
+  $('rebuys').textContent=S.rebuys;
+  $('chips').textContent=fmt(chips);
+  $('avg').textContent=fmt(Math.round(avg));
+  $('avgBB').textContent=(bb? (avg/bb).toFixed(1).replace('.',',') : '0')+' BB';
+  $('elapsed').textContent=mmss(S.elapsed);
+}
+
+/* ---------- Controles ---------- */
+$('btnPlay').onclick=()=> S.running?pause():start();
+$('btnNext').onclick=()=>goto(S.cur+1);
+$('btnPrev').onclick=()=>{ (S.levels[S.cur].min*60-remainingNow()>5) ? goto(S.cur) : goto(S.cur-1); };
+$('btnPlus').onclick=()=>addTime(60);
+$('btnMinus').onclick=()=>addTime(-60);
+$('plMinus').onclick=()=>{ if(S.left>1){S.left--; save(); render();} };
+$('plPlus').onclick=()=>{ if(S.left<S.entrants){S.left++; save(); render();} };
+$('rbMinus').onclick=()=>{ if(S.rebuys>0){S.rebuys--; save(); render();} };
+$('rbPlus').onclick=()=>{ S.rebuys++; save(); render(); };
+$('btnSound').onclick=()=>{ S.sound=!S.sound; save(); render(); if(S.sound) beep(); };
+$('btnFull').onclick=toggleFull;
+document.addEventListener('keydown',e=>{
+  if($('modal').classList.contains('open')||$('chipModal').classList.contains('open')) return;
+  if(e.code==='Space'){ e.preventDefault(); S.running?pause():start(); }
+  if(e.code==='ArrowRight') goto(S.cur+1);
+  if(e.code==='ArrowLeft') goto(S.cur-1);
+  if(e.code==='ArrowUp') addTime(60);
+  if(e.code==='ArrowDown') addTime(-60);
+  if(e.code==='KeyF') toggleFull();
+});
+
+/* ---------- Configurações ---------- */
+let draft;
+function openCfg(){
+  draft=JSON.parse(JSON.stringify(S.levels));
+  $('cfgName').value=S.name; $('cfgStack').value=S.stack; $('cfgEntrants').value=S.entrants; $('cfgRebuyStack').value=S.rebuyStack;
+  $('allMin').value=(draft.find(l=>!l.brk)||{min:10}).min;
+  drawLevels(); $('modal').classList.add('open');
+}
+function drawLevels(){
+  let n=0;
+  $('levelsBody').innerHTML = draft.map((l,i)=>{
+    const cur = i===S.cur ? ' cur' : '';
+    if(l.brk) return `<tr class="brk${cur}"><td>☕</td><td colspan="3" style="color:var(--blue)">Intervalo</td>
+      <td><input type="number" min="1" data-i="${i}" data-k="min" value="${l.min}"></td><td><button class="del" data-del="${i}">✕</button></td></tr>`;
+    n++;
+    return `<tr class="${cur}"><td>${n}</td>
+      <td><input type="number" min="0" data-i="${i}" data-k="sb" value="${l.sb}"></td>
+      <td><input type="number" min="0" data-i="${i}" data-k="bb" value="${l.bb}"></td>
+      <td><input type="number" min="0" data-i="${i}" data-k="ante" value="${l.ante||0}"></td>
+      <td><input type="number" min="1" data-i="${i}" data-k="min" value="${l.min}"></td>
+      <td><button class="del" data-del="${i}">✕</button></td></tr>`;
+  }).join('');
+}
+$('levelsBody').addEventListener('input',e=>{ const t=e.target; if(t.dataset.k) draft[t.dataset.i][t.dataset.k]=Number(t.value)||0; });
+$('levelsBody').addEventListener('click',e=>{ const d=e.target.dataset.del; if(d!==undefined && draft.length>1){ draft.splice(d,1); drawLevels(); } });
+$('addLevel').onclick=()=>{ const last=[...draft].reverse().find(l=>!l.brk)||{sb:5,bb:10,ante:0,min:10};
+  draft.push({sb:last.sb*2,bb:last.bb*2,ante:last.ante?last.ante*2:0,min:last.min}); drawLevels(); };
+$('addBreak').onclick=()=>{ draft.push({brk:true,min:10}); drawLevels(); };
+$('applyAll').onclick=()=>{ const m=Number($('allMin').value)||10; draft.forEach(l=>{ if(!l.brk) l.min=m; }); drawLevels(); };
+$('saveCfg').onclick=()=>{
+  const wasRunning=S.running; if(wasRunning) pause();
+  const curMinBefore=S.levels[S.cur]?.min;
+  S.name=$('cfgName').value.trim()||'Torneio de Poker';
+  S.stack=Number($('cfgStack').value)||0; S.rebuyStack=Number($('cfgRebuyStack').value)||0;
+  const ent=Number($('cfgEntrants').value)||0;
+  if(ent!==S.entrants){ S.left=Math.max(0,Math.min(ent, S.left+(ent-S.entrants))); S.entrants=ent; }
+  S.levels=draft; if(S.cur>=S.levels.length) S.cur=S.levels.length-1;
+  const newMin=S.levels[S.cur].min;
+  if(newMin!==curMinBefore) S.remaining=Math.max(0,S.remaining+(newMin-curMinBefore)*60);
+  $('modal').classList.remove('open'); save(); if(wasRunning) start(); render();
+};
+$('resetTourney').onclick=()=>{
+  if(!confirm('Reiniciar o torneio? O relógio volta ao nível 1 e os contadores zeram.')) return;
+  keepAwake(false);
+  Object.assign(S,{cur:0,remaining:S.levels[0].min*60,running:false,endAt:0,left:S.entrants,rebuys:0,elapsed:0,startedAt:0});
+  $('modal').classList.remove('open'); save(); render();
+};
+$('resetStructure').onclick=()=>{ if(confirm('Substituir pela estrutura padrão?')){ draft=JSON.parse(JSON.stringify(DEFAULT_LEVELS)); drawLevels(); } };
+$('btnSettings').onclick=openCfg;
+$('modal').addEventListener('click',e=>{ if(e.target.id==='modal') $('modal').classList.remove('open'); });
+
+/* ---------- Divisão de fichas ---------- */
+if(!S.chips) S.chips=defaultChips();
+const C=()=>S.chips;
+const capOf=d=> d.qty>0 ? Math.floor(d.qty/C().players) : Infinity;
+
+function suggestChips(){
+  const c=C(), stack=c.stack;
+  const ds=c.denoms.map((d,i)=>({...d,i})).filter(d=>d.v>0).sort((a,b)=>a.v-b.v);
+  const targets=[8,8,6,5,4,4,4,4], cnt={};
+  c.denoms.forEach((d,i)=>cnt[i]=0);
+  ds.forEach((d,k)=>cnt[d.i]=Math.min(targets[k]??4, capOf(d)));
+  const val=()=>ds.reduce((s,d)=>s+cnt[d.i]*d.v,0);
+  for(let k=ds.length-1;k>=0 && val()>stack;k--) while(cnt[ds[k].i]>0 && val()>stack) cnt[ds[k].i]--;
+  let rem=stack-val();
+  for(let k=ds.length-1;k>=0;k--){
+    const d=ds[k], add=Math.min(Math.floor(rem/d.v), capOf(d)-cnt[d.i]);
+    if(add>0){ cnt[d.i]+=add; rem-=add*d.v; }
+  }
+  c.counts=c.denoms.map((d,i)=>cnt[i]);
+}
+
+function openChips(){
+  const c=C(); $('chPlayers').value=c.players; $('chStack').value=c.stack;
+  drawChips(); $('chipModal').classList.add('open');
+}
+function drawChips(){
+  const c=C(); const P=c.players;
+  $('chipBody').innerHTML=c.denoms.map((d,i)=>{
+    const n=c.counts[i]||0, need=n*P, short=d.qty>0 && need>d.qty;
+    return `<tr>
+      <td><input type="number" min="1" data-ci="${i}" data-ck="v" value="${d.v}" style="width:70px"></td>
+      <td><input type="color" data-ci="${i}" data-ck="color" value="${d.color}"></td>
+      <td><input type="number" min="0" data-ci="${i}" data-ck="qty" value="${d.qty||''}" placeholder="—" style="width:70px"></td>
+      <td><div class="cnt"><button data-cm="${i}">−</button><strong>${n}</strong><button data-cp="${i}">+</button></div></td>
+      <td style="${short?'color:var(--red)':''}">${need}${d.qty>0?' / '+d.qty:''}</td>
+      <td><button class="del" data-cdel="${i}">✕</button></td></tr>`;
+  }).join('');
+  summary();
+}
+function summary(){
+  const c=C(), P=c.players;
+  const per=c.denoms.reduce((s,d,i)=>s+d.v*(c.counts[i]||0),0);
+  const pieces=c.counts.reduce((s,n)=>s+(n||0),0);
+  const ok=per===c.stack;
+  let html=`<div class="big">Cada jogador recebe: <span class="${ok?'ok':'bad'}">${fmt(per)}</span> ${ok?'✓':'(alvo '+fmt(c.stack)+')'}</div>`;
+  html+=`<div class="give">`+c.denoms.map((d,i)=>(c.counts[i]>0)?`<span><i class="chip chip-sm" style="background:${d.color}"></i>${c.counts[i]} × ${fmt(d.v)}</span>`:'').join('')+`</div>`;
+  html+=`<div style="margin-top:8px">${pieces} fichas por jogador · ${pieces*P} fichas no total · ${fmt(per*P)} em jogo (${P} jogadores)</div>`;
+  const warns=[];
+  if(!ok) warns.push(per>c.stack?`Passou ${fmt(per-c.stack)} do stack.`:`Faltam ${fmt(c.stack-per)} para fechar o stack.`);
+  c.denoms.forEach((d,i)=>{ const need=(c.counts[i]||0)*P; if(d.qty>0 && need>d.qty) warns.push(`Ficha de ${fmt(d.v)}: precisa de ${need}, você tem ${d.qty}.`); });
+  const minChip=Math.min(...c.denoms.filter(d=>d.v>0).map(d=>d.v));
+  const firstSB=(S.levels.find(l=>!l.brk)||{}).sb;
+  if(firstSB && firstSB%minChip) warns.push(`O small blind inicial (${firstSB}) não fecha com a menor ficha (${minChip}).`);
+  if(warns.length) html+=`<div class="bad" style="margin-top:8px">⚠️ `+warns.join('<br>⚠️ ')+`</div>`;
+  $('chipSummary').innerHTML=html;
+}
+$('chipBody').addEventListener('input',e=>{
+  const t=e.target, i=t.dataset.ci, k=t.dataset.ck; if(i===undefined) return;
+  C().denoms[i][k]= k==='color'? t.value : (Number(t.value)||0);
+  save(); if(k==='color') summary(); else { drawChipsKeepFocus(t); }
+});
+function drawChipsKeepFocus(t){ // atualiza totais sem perder o foco do campo
+  const i=t.dataset.ci,k=t.dataset.ck, pos=t.selectionStart; drawChips();
+  const n=$('chipBody').querySelector(`[data-ci="${i}"][data-ck="${k}"]`); if(n){ n.focus(); try{n.setSelectionRange(pos,pos)}catch(e){} }
+}
+$('chipBody').addEventListener('click',e=>{
+  const t=e.target.dataset, c=C();
+  if(t.cp!==undefined){ c.counts[t.cp]=(c.counts[t.cp]||0)+1; }
+  else if(t.cm!==undefined){ c.counts[t.cm]=Math.max(0,(c.counts[t.cm]||0)-1); }
+  else if(t.cdel!==undefined && c.denoms.length>1){ c.denoms.splice(t.cdel,1); c.counts.splice(t.cdel,1); }
+  else return;
+  save(); drawChips();
+});
+$('chPlayers').addEventListener('input',e=>{ C().players=Math.max(1,Number(e.target.value)||1); save(); drawChips(); });
+$('chStack').addEventListener('input',e=>{ C().stack=Number(e.target.value)||0; save(); summary(); });
+$('chAdd').onclick=()=>{ const c=C(), mx=Math.max(...c.denoms.map(d=>d.v),1);
+  c.denoms.push({v:mx*5,color:'#8e44ad',qty:0}); c.counts.push(0); save(); drawChips(); };
+$('chAuto').onclick=()=>{ suggestChips(); save(); drawChips(); };
+$('chApply').onclick=()=>{
+  const c=C();
+  if(!confirm(`Usar ${c.players} jogadores com stack de ${fmt(c.stack)} no torneio?`)) return;
+  S.stack=c.stack; S.rebuyStack=c.stack; S.entrants=c.players;
+  S.left = S.elapsed>0 ? Math.min(S.left,c.players) : c.players;
+  save(); render(); $('chipModal').classList.remove('open');
+};
+$('chClose').onclick=()=>$('chipModal').classList.remove('open');
+$('btnChips').onclick=openChips;
+$('chipModal').addEventListener('click',e=>{ if(e.target.id==='chipModal') $('chipModal').classList.remove('open'); });
+
+/* ---------- Inicialização ---------- */
+if(awakeWanted()) keepAwake(true);
+updFullBtn();
+render(); setInterval(tick,250);
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+</script>
+</body>
+</html>
