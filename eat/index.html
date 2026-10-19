@@ -1,1 +1,444 @@
-a
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Calendário de eventos do Eatventure, equipamentos e dicas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍔</text></svg>">
+<title>Guia Eatventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: comanda de lanchonete — faixa de nav fixa, seções empilhadas, cartões só para eventos e equipamentos */
+:root{
+  --bg:#EDF4EF; --surface:#FFFFFF; --ink:#13261E; --muted:#557064; --line:#CFE0D6;
+  --ketchup:#D2392A; --mustard:#E9A800; --mint:#2E8B62; --chip:#E1ECE5;
+  --f-display:"Bungee", "Arial Black", system-ui, sans-serif;
+  --f-body:"Nunito Sans", system-ui, -apple-system, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0E1814; --surface:#16241E; --ink:#E6F0EA; --muted:#93AE9F; --line:#28392F;
+  --ketchup:#FF6A57; --mustard:#FFC93C; --mint:#5BC796; --chip:#1E2F27; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0E1814; --surface:#16241E; --ink:#E6F0EA; --muted:#93AE9F; --line:#28392F;
+  --ketchup:#FF6A57; --mustard:#FFC93C; --mint:#5BC796; --chip:#1E2F27; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--ink)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--ketchup);font-weight:700}
+a:focus-visible,button:focus-visible{outline:3px solid var(--mustard);outline-offset:2px}
+
+header.top{background:var(--ink);color:var(--bg)}
+header.top .wrap{padding-block:28px 22px;display:grid;gap:8px}
+.kicker{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mustard)}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,7vw,48px);line-height:1.05;margin:0;text-wrap:balance}
+h1 span{color:var(--ketchup)}
+header.top p{margin:0;max-width:60ch;opacity:.85}
+
+nav.chips{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.chips .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:10px;scrollbar-width:none}
+nav.chips a{flex:none;text-decoration:none;font-size:13px;font-weight:800;color:var(--ink);background:var(--chip);padding:6px 12px;border-radius:999px}
+
+main .wrap{display:grid;gap:44px;padding-block:28px 60px}
+section{display:grid;gap:16px;scroll-margin-top:64px}
+h2{font-family:var(--f-display);font-weight:400;font-size:24px;margin:0;line-height:1.15;text-wrap:balance}
+h3{font-size:18px;font-weight:800;margin:0;text-wrap:balance}
+.lede{margin:0;color:var(--muted);max-width:65ch}
+
+/* Agora */
+.now{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.ticket{background:var(--surface);border:2px dashed var(--line);border-radius:6px;padding:16px;display:grid;gap:4px;min-width:0}
+.ticket.hot{border:2px solid var(--ketchup)}
+.ticket .lbl{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ticket .big{font-family:var(--f-display);font-size:22px;line-height:1.15}
+.ticket .when{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted);margin:0}
+
+/* Semana */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;overflow-x:auto}
+.week-scroll{overflow-x:auto}
+.week-grid{display:grid;grid-template-columns:110px repeat(7,minmax(44px,1fr));min-width:560px;font-size:13px}
+.week-grid > div{padding:8px 6px;border-bottom:1px solid var(--line)}
+.week-grid .dh{font-family:var(--f-mono);font-weight:700;text-align:center;font-size:12px}
+.week-grid .dh.today{color:var(--ketchup)}
+.week-grid .ev{font-weight:800}
+.bar{border-radius:4px;margin:2px 0}
+.bar.on{background:var(--mint)}
+.bar.alt{background:repeating-linear-gradient(45deg,var(--mustard) 0 6px,transparent 6px 12px);border:1px solid var(--mustard)}
+.bar.top{background:var(--ketchup)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px;margin-right:6px;vertical-align:middle}
+
+/* Eventos */
+.rot{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;align-content:start;min-width:0}
+.card.is-now{box-shadow:0 0 0 2px var(--ketchup)}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.pill{font-family:var(--f-mono);font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--chip);color:var(--ink);white-space:nowrap}
+.pill.red{background:var(--ketchup);color:var(--surface)}
+.gear{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.gear li{display:grid;gap:2px;border-top:1px solid var(--line);padding-top:8px}
+.gear .slot{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.gear b{font-size:15px}
+.stats{font-family:var(--f-mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.stats em{font-style:normal;color:var(--ink);font-weight:700}
+
+/* Listas ordenadas por prioridade */
+ol.prio{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:p}
+ol.prio li{counter-increment:p;display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start}
+ol.prio li::before{content:counter(p);font-family:var(--f-display);font-size:18px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--mustard);color:#13261E}
+ol.prio li div{min-width:0}
+ol.prio b{display:block}
+ol.prio span{color:var(--muted);font-size:14.5px}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+ul.plain{margin:0;padding-left:20px;display:grid;gap:6px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.warn{border-left:4px solid var(--ketchup);background:var(--surface);padding:12px 14px;border-radius:0 8px 8px 0;font-size:15px}
+
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:700}
+.tbl{overflow-x:auto}
+
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.links a{display:block;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;text-decoration:none;color:var(--ink)}
+.links a small{display:block;color:var(--muted);font-weight:400}
+footer{font-size:13px;color:var(--muted);padding-block:0 40px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="kicker">Atualizado em 19/out/2026</div>
+    <h1>Guia <span>Eatventure</span></h1>
+    <p>Calendário de eventos, equipamentos de cada evento e as dicas que mais aceleram o jogo, do iniciante ao caçador de Mythic.</p>
+  </div>
+</header>
+
+<nav class="chips" aria-label="Seções">
+  <div class="wrap">
+    <a href="#agora">Agora</a>
+    <a href="#semana">Semana</a>
+    <a href="#rotativos">Eventos de fim de semana</a>
+    <a href="#pocoes">Poções</a>
+    <a href="#outros">Outros eventos</a>
+    <a href="#cofre">Cofre</a>
+    <a href="#dicas">Dicas</a>
+    <a href="#builds">Builds</a>
+    <a href="#clubes">Clubes</a>
+    <a href="#links">Links</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<section id="agora">
+  <h2>O que está rolando</h2>
+  <div class="now" id="nowBox">
+    <div class="ticket hot"><span class="lbl">Evento de fim de semana</span><span class="big" id="curName">—</span><span class="when" id="curWhen"></span></div>
+    <div class="ticket"><span class="lbl">Próximo</span><span class="big" id="nextName">—</span><span class="when" id="nextWhen"></span></div>
+    <div class="ticket"><span class="lbl">Hoje</span><span class="big" id="todayList" style="font-size:16px;font-family:var(--f-body);font-weight:800">—</span></div>
+  </div>
+  <p class="note">Previsão calculada pela rotação fixa (Porto → Lua → Mina → Idade Média), a partir do Porto de 4 a 7 de junho de 2026. Se a Lessmore mudar a ordem, confira no Discord.</p>
+</section>
+
+<section id="semana">
+  <h2>Semana típica</h2>
+  <div class="week-scroll">
+    <div class="week-grid" id="weekGrid"></div>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--ketchup)"></i>Evento principal</span>
+    <span><i style="background:var(--mint)"></i>Toda semana</span>
+    <span><i style="background:repeating-linear-gradient(45deg,var(--mustard) 0 4px,transparent 4px 8px);border:1px solid var(--mustard)"></i>Semana sim, semana não</span>
+  </div>
+  <p class="note">Colheita (Harvest) entra de segunda a sexta, mais ou menos uma vez por mês. O reset do clube acontece a cada 2 semanas, terça à meia-noite GMT (21h de segunda em Brasília).</p>
+</section>
+
+<section id="rotativos">
+  <h2>Eventos de fim de semana</h2>
+  <p class="lede">Rodam de quinta a domingo, um por semana, em ciclo de 4. São a <b>única fonte de projetos Ultimate</b>, que você precisa para forjar Mythics. Se já tem um projeto Mythic em mente, gaste suas gemas nas caixas do evento que dá as peças dele.</p>
+  <div class="rot" id="rotCards">
+
+    <article class="card" data-ev="0">
+      <div class="card-head"><h3>Porto (Seaport)</h3><span class="pill">Qui–Dom</span></div>
+      <ul class="gear">
+        <li><span class="slot">Ferramenta</span><b>Anchor</b><span class="stats"><em>AW Faster Food 100%</em> · AW Perfect Food 30%</span></li>
+        <li><span class="slot">Corpo</span><b>Shark</b><span class="stats"><em>AW Faster Walk 90%</em> · AW Instant Food 50%</span></li>
+        <li><span class="slot">Cabeça</span><b>Shark</b><span class="stats"><em>Faster Food 500%</em> · AW Faster Food 65%</span></li>
+      </ul>
+    </article>
+
+    <article class="card" data-ev="1">
+      <div class="card-head"><h3>Lua (Moon)</h3><span class="pill">Qui–Dom</span></div>
+      <ul class="gear">
+        <li><span class="slot">Ferramenta</span><b>Laser Gun</b><span class="stats">AW Perfect Food 20% · <em>AW Instant Food 60%</em></span></li>
+        <li><span class="slot">Cabeça</span><b>Robot Head</b><span class="stats"><em>AW Faster Walk 116%</em> · AW Perfect Food 50%</span></li>
+        <li><span class="slot">Corpo</span><b>Robot Suit</b><span class="stats"><em>Faster Food 300%</em> · AW Faster Food 150%</span></li>
+      </ul>
+    </article>
+
+    <article class="card" data-ev="2">
+      <div class="card-head"><h3>Mina (Mine)</h3><span class="pill">Qui–Dom</span></div>
+      <ul class="gear">
+        <li><span class="slot">Ferramenta</span><b>Pickaxe</b><span class="stats"><em>Perfect Food 60%</em> · AW Perfect Food 30%</span></li>
+        <li><span class="slot">Corpo</span><b>Tool Belt</b><span class="stats"><em>AW Faster Food 100%</em> · AW Perfect Food 30%</span></li>
+        <li><span class="slot">Cabeça</span><b>Torch Helmet</b><span class="stats"><em>AW Faster Food 200%</em> · AW Faster Walk 150%</span></li>
+      </ul>
+    </article>
+
+    <article class="card" data-ev="3">
+      <div class="card-head"><h3>Idade Média (Middle Ages)</h3><span class="pill">Qui–Dom</span></div>
+      <ul class="gear">
+        <li><span class="slot">Cabeça</span><b>Royal Crown</b><span class="stats"><em>AW Faster Food 300%</em> · AW Instant Food 20%</span></li>
+        <li><span class="slot">Corpo</span><b>Royal Robe</b><span class="stats"><em>AW Faster Food 400%</em> · AW Instant Food 30%</span></li>
+        <li><span class="slot">Ferramenta</span><b>Royal Sceptre</b><span class="stats"><em>Instant Food 65%</em> · AW Perfect Food 50%</span></li>
+      </ul>
+    </article>
+  </div>
+  <p class="note">AW = vale para todos os trabalhadores (All Workers). Sem "AW", o bônus vale só para o chef que usa a peça.</p>
+</section>
+
+<section id="pocoes">
+  <h2>Loja de Poções (caldeirão)</h2>
+  <p class="lede">Toda semana, de sábado a terça. Você comanda uma loja de alquimia, sobe o caldeirão, as estações e o Cofre Arcano. A meta é fechar o mapa o mais rápido possível: abaixo de 1 hora está bom, abaixo de 40 minutos sem gastar muita gema é ótimo.</p>
+
+  <div class="two">
+    <div class="box">
+      <h3>Ordem dos bônus do caldeirão</h3>
+      <ol class="prio">
+        <li><div><b>Faster Food</b><span>Reduz o tempo de preparo. Leve até uns nível 5–7 primeiro.</span></div></li>
+        <li><div><b>Walk Speed</b><span>Suba junto com o Faster Food. Caldeirão rápido com alquimista lento vira fila.</span></div></li>
+        <li><div><b>Instant Food</b><span>Caro e lento de subir, mas é o que faz o evento decolar.</span></div></li>
+        <li><div><b>Double Food</b><span>Multiplica a produção. Mire no nível 4–6.</span></div></li>
+        <li><div><b>Perfect Food</b><span>Degrau rápido de subir, serve de ponte.</span></div></li>
+        <li><div><b>Golden → Divine</b><span>Fase final. Divine com Instant em 60–70% transforma a produção num rolo compressor.</span></div></li>
+      </ol>
+    </div>
+    <div class="box">
+      <h3>Como jogar</h3>
+      <ul class="plain">
+        <li>Contrate <b>todos os Alquimistas</b> antes de encher de clientes. Cliente demais no início entope a loja.</li>
+        <li>Ligue boosts de x2 ou x5 logo no começo, enquanto o caldeirão ainda está fraco.</li>
+        <li>Foque no <b>primeiro caldeirão</b> antes de espalhar upgrades.</li>
+        <li>Gorjetas e enfeites ficam para o fim.</li>
+        <li>Cofre Arcano: nível ~7 basta. Se estiver muito fraco, vale ir até ~10.</li>
+        <li>Uns 500–600 gemas ajudam a compensar azar. Mais que isso é só para ranking.</li>
+      </ul>
+      <h3>Equipamentos do evento</h3>
+      <ul class="gear">
+        <li><span class="slot">Cabeça</span><b>Alchemist Goggles</b><span class="stats"><em>AW Faster Walk 150%</em> · AW Perfect Food 40%</span></li>
+        <li><span class="slot">Corpo</span><b>Alchemist Bandolier</b><span class="stats"><em>AW Faster Walk 120%</em> · AW Instant Food 40%</span></li>
+        <li><span class="slot">Ferramenta</span><b>Potion Flask</b><span class="stats"><em>Double Food 50%</em> · AW Instant Food 35%</span></li>
+      </ul>
+      <p class="note">Esses itens não entram em receita de Mythic.</p>
+    </div>
+  </div>
+</section>
+
+<section id="outros">
+  <h2>Outros eventos</h2>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Evento</th><th>Quando</th><th>Para que serve</th></tr></thead>
+      <tbody>
+        <tr><td><b>Corrida de Restaurante</b></td><td>Toda quarta</td><td>Corrida no meio da semana. O Discord tem competição própria.</td></tr>
+        <tr><td><b>Desafio (Challenge)</b></td><td>Seg–Ter, semana sim, semana não</td><td>Alterna com o Mercador. Cai junto com o reset do clube.</td></tr>
+        <tr><td><b>Mercador (Merchant)</b></td><td>Seg–Ter, semana sim, semana não</td><td>Troca laranjas (ganhas em marcos das estações) por prêmios. Laranja que sobra passa para o próximo Mercador. Não dá medalha.</td></tr>
+        <tr><td><b>Colheita (Harvest)</b></td><td>Seg–Sex, ~1x por mês</td><td>Evento de vários dias no meio do mês.</td></tr>
+        <tr><td><b>Reset do clube</b></td><td>A cada 2 semanas, terça 00h GMT</td><td>Fecha a temporada do clube e entrega as recompensas.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn">Jogue <b>todos</b> os eventos, mesmo sem chegar ao fim. As recompensas dos marcos (medalhas bronze, prata e ouro, gemas e caixas) somam rápido. O dinheiro do evento não vai para o restaurante principal.</div>
+</section>
+
+<section id="cofre">
+  <h2>Onde gastar gemas: o Cofre</h2>
+  <p class="lede">O Cofre é o melhor uso de gema até você começar a caçar Mythic. Os bônus são permanentes e valem em todo restaurante. Não compre caixas no começo.</p>
+  <div class="two">
+    <div class="box">
+      <h3>Prioridade máxima</h3>
+      <ol class="prio">
+        <li><div><b>Controle remoto (Remote)</b><span>Anúncio rende mais. Melhor gema do jogo.</span></div></li>
+        <li><div><b>Talão de cheques (Checkbook)</b><span>Começa cada cidade com mais dinheiro.</span></div></li>
+        <li><div><b>Esfregão (Mop)</b><span>Clientes andam mais rápido.</span></div></li>
+        <li><div><b>Caixa registradora (Register)</b><span>Clientes pedem mais rápido. Pode parar quando tiver o pet Panda.</span></div></li>
+        <li><div><b>TV</b><span>Boost de anúncio dura mais. Combina com o Remote.</span></div></li>
+      </ol>
+    </div>
+    <div class="box">
+      <h3>Depois</h3>
+      <ul class="plain">
+        <li><b>Picareta (Pickaxe):</b> investidores oferecem gemas. Nível 2 é o melhor custo; até 8 ainda vale.</li>
+        <li><b>Cartão-chave (Key Card):</b> chance de ganhar chave ao completar aventura.</li>
+      </ul>
+      <h3>Deixe por último</h3>
+      <ul class="plain">
+        <li>Maleta (investidor dá mais dinheiro)</li>
+        <li>Pote de gorjeta e Cofrinho (gorjetas)</li>
+        <li>Faca e Ampulheta (só ajudam offline)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="dicas">
+  <h2>Dicas de progresso</h2>
+  <div class="two">
+    <div class="box">
+      <h3>Como fechar cidades rápido</h3>
+      <p style="margin:0">O jogo tem 60 cidades. Ao terminar a 60ª, você volta para a 1 e começa um novo ciclo. Dois métodos funcionam melhor que abrir tudo de uma vez:</p>
+      <ul class="plain">
+        <li><b>Método alto:</b> leve uma estação ao máximo antes de abrir a próxima.</li>
+        <li><b>Primeira e última:</b> maximize a primeira estação, depois abra e maximize a última, e só então preencha o meio.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Não suba equipamento à toa</h3>
+      <p style="margin:0">Só use salvage para subir peça que fará parte do seu build Mythic final. Guarde o resto para forjar e doar ao clube. Mantenha no mínimo:</p>
+      <div class="tbl">
+        <table>
+          <thead><tr><th>Raridade</th><th>Guardar</th></tr></thead>
+          <tbody>
+            <tr><td>Ultimate</td><td class="n">1 de cada</td></tr>
+            <tr><td>Legendary</td><td class="n">1 de cada</td></tr>
+            <tr><td>Epic</td><td class="n">4 de cada</td></tr>
+            <tr><td>Rare</td><td class="n">6 de cada</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Ferramentas: guarde o dobro, porque são 2 espaços.</p>
+    </div>
+  </div>
+</section>
+
+<section id="builds">
+  <h2>Builds para começar</h2>
+  <p class="lede">Só peças Epic, mas que rendem bem acima da raridade. Quando juntar algumas Epic e Legendary, teste no Build Optimizer.</p>
+  <div class="rot">
+    <article class="card">
+      <div class="card-head"><h3>Build 1</h3><span class="pill">Epic</span></div>
+      <ul class="gear">
+        <li><span class="slot">Cabeça</span><b>Hood</b><span class="stats">Faster Walk 90% · Instant 38%</span></li>
+        <li><span class="slot">Corpo</span><b>Box</b><span class="stats">Faster Walk 100% · Instant 34%</span></li>
+        <li><span class="slot">Ferramenta</span><b>Rolling Pin</b><span class="stats">Perfect 10% · Instant 25%</span></li>
+      </ul>
+    </article>
+    <article class="card">
+      <div class="card-head"><h3>Build 2</h3><span class="pill">Epic</span></div>
+      <ul class="gear">
+        <li><span class="slot">Cabeça</span><b>Hood</b><span class="stats">Faster Walk 90% · Instant 38%</span></li>
+        <li><span class="slot">Corpo</span><b>Kimono White Belt</b><span class="stats">Faster Walk 143% · Instant 20%</span></li>
+        <li><span class="slot">Ferramenta</span><b>Rolling Pin</b><span class="stats">Perfect 10% · Instant 25%</span></li>
+      </ul>
+    </article>
+    <article class="card">
+      <div class="card-head"><h3>Build 3</h3><span class="pill">Epic</span></div>
+      <ul class="gear">
+        <li><span class="slot">Cabeça</span><b>Hood</b><span class="stats">Faster Walk 90% · Instant 38%</span></li>
+        <li><span class="slot">Corpo</span><b>Kimono White Belt</b><span class="stats">Faster Walk 143% · Instant 20%</span></li>
+        <li><span class="slot">Ferramenta</span><b>Pizza Cutter</b><span class="stats">Faster Food 20% · Instant 40%</span></li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section id="clubes">
+  <h2>Clubes</h2>
+  <div class="box">
+    <ul class="plain">
+      <li>Liberam na <b>cidade 7</b>.</li>
+      <li>Entre num clube <b>ativo</b>. Clube parado trava seu progresso.</li>
+      <li>Escolha um que combine com seu ritmo: quase todos pedem uma doação mínima por temporada de 2 semanas. Fechar uma cidade por dia doando tudo dá cerca de 2 mil XP.</li>
+      <li>Doe o que passar da tabela de "guardar". Doação vira XP, XP sobe o clube e todo mundo ganha caixas, gemas, ração de pet, multiplicadores e as <b>Caixas de Clube</b>, a única fonte de projetos Mythic.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="links">
+  <h2>Links úteis</h2>
+  <div class="links">
+    <a href="https://eatventuretools.app/" target="_blank" rel="noopener">Eatventure Tools<small>Optimizer, comparador e meta builds</small></a>
+    <a href="https://discord.gg/eatventure" target="_blank" rel="noopener">Discord oficial<small>Guias de cada evento e busca de clube</small></a>
+    <a href="https://www.reddit.com/r/eatventureofficial/" target="_blank" rel="noopener">r/eatventureofficial<small>Comunidade no Reddit</small></a>
+    <a href="https://docs.google.com/spreadsheets/d/1xcVOTizpCp8oQFAalfHUrB91F_Mr-mFZmP1HoHU8xQo/edit" target="_blank" rel="noopener">Handbook da comunidade<small>Custos de cofre, poções e clube</small></a>
+    <a href="https://clashiverse.com/eatventure-potion-event-guide/" target="_blank" rel="noopener">Guia do evento de Poções<small>Ordem de upgrades detalhada</small></a>
+  </div>
+</section>
+
+</div>
+</main>
+<footer><div class="wrap">Fontes: eatventuretools.app, wiki Eatventure e Clashiverse. Guia feito por fãs, sem ligação com a Lessmore.</div></footer>
+
+<script>
+(function(){
+  const ROT = ["Porto (Seaport)","Lua (Moon)","Mina (Mine)","Idade Média (Middle Ages)"];
+  const DAY = 864e5;
+  // Âncora: Porto começou qui 4/jun/2026
+  const anchor = Date.UTC(2026,5,4);
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const weeks = Math.floor((today - anchor) / (7*DAY));
+  const idx = ((weeks % 4) + 4) % 4;
+  const thu = anchor + weeks*7*DAY;
+  const dow = (new Date(today)).getUTCDay(); // 0 dom
+  const live = dow === 4 || dow === 5 || dow === 6 || dow === 0;
+  const fmt = t => new Date(t).toLocaleDateString("pt-BR",{day:"2-digit",month:"short",timeZone:"UTC"});
+
+  let curIdx, curStart;
+  if (live){ curIdx = idx; curStart = thu; }
+  else { curIdx = (idx+1)%4; curStart = thu + 7*DAY; }
+  const nextIdx = (curIdx+1)%4, nextStart = curStart + 7*DAY;
+
+  document.getElementById("curName").textContent = ROT[curIdx];
+  document.getElementById("curWhen").textContent = (live ? "Agora · " : "Começa ") + fmt(curStart) + " – " + fmt(curStart+3*DAY);
+  document.querySelector("#nowBox .ticket .lbl").textContent = live ? "Evento de fim de semana (ativo)" : "Próximo fim de semana";
+  document.getElementById("nextName").textContent = ROT[nextIdx];
+  document.getElementById("nextWhen").textContent = fmt(nextStart) + " – " + fmt(nextStart+3*DAY);
+
+  const t = [];
+  if (live) t.push(ROT[idx]);
+  if ([6,0,1,2].includes(dow)) t.push("Loja de Poções");
+  if (dow === 3) t.push("Corrida de Restaurante");
+  if (dow === 1 || dow === 2) t.push("Desafio ou Mercador");
+  document.getElementById("todayList").textContent = t.length ? t.join(" · ") : "Sem evento fixo hoje";
+
+  document.querySelectorAll("#rotCards .card").forEach(c => {
+    if (+c.dataset.ev === curIdx){
+      c.classList.add("is-now");
+      const p = document.createElement("span"); p.className = "pill red";
+      p.textContent = live ? "AGORA" : "PRÓXIMO";
+      c.querySelector(".card-head").appendChild(p);
+    }
+  });
+
+  // Grade semanal (seg..dom)
+  const days = ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+  const todayCol = (dow+6)%7;
+  const rows = [
+    ["Fim de semana", [0,0,0,1,1,1,1], "top"],
+    ["Poções",        [1,1,0,0,0,1,1], "on"],
+    ["Corrida",       [0,0,1,0,0,0,0], "on"],
+    ["Desafio / Mercador",[1,1,0,0,0,0,0], "alt"]
+  ];
+  const g = document.getElementById("weekGrid");
+  let h = '<div></div>' + days.map((d,i)=>`<div class="dh${i===todayCol?' today':''}">${d}</div>`).join("");
+  rows.forEach(([n,m,cls]) => {
+    h += `<div class="ev">${n}</div>` + m.map(v=>`<div>${v?`<div class="bar ${cls}" style="height:14px"></div>`:''}</div>`).join("");
+  });
+  g.innerHTML = h;
+})();
+</script>
+
+</body>
+</html>
