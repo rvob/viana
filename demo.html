@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08090d">
+<title>Central de Aplicativos</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#08090d}
+body{min-height:100vh;padding:22px 14px 20px;font-family:Roboto,"Helvetica Neue",Arial,sans-serif;color:#fff;background:#0b1512;background:radial-gradient(circle at 15% 0,#10312c 0,#08090d 45%);-webkit-text-size-adjust:100%}
+body.lock{overflow:hidden}
+.wrap{max-width:1050px;margin:0 auto}
+header{margin-bottom:20px;text-align:center}
+h1{font-size:26px;font-weight:700}
+.sub{margin-top:4px;font-size:14px;color:#9da3b0}
+.sub b{font-weight:400;color:#22b8a3}
+
+/* Grade em flexbox (funciona em Android antigo) */
+.grid{display:flex;flex-wrap:wrap;margin:0 -8px}
+.cell{width:100%;padding:8px}
+.btn{display:flex;align-items:center;min-height:76px;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);color:#fff;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ico{display:flex;align-items:center;justify-content:center;width:46px;height:46px;flex:none;border-radius:12px;background:rgba(0,0,0,.25)}
+.txt{min-width:0;margin-left:14px;overflow:hidden}
+.txt strong{display:block;font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txt small{display:block;margin-top:2px;font-size:12px;color:#e6e6e6}
+
+/* UniTV: card com dois botões */
+.group{justify-content:space-between;flex-wrap:wrap;cursor:default}
+.ttl{margin:4px 10px 4px 0;font-size:16px;font-weight:600}
+.subs{display:flex;flex-wrap:wrap}
+.sub-link{display:flex;align-items:center;min-height:40px;margin:3px;padding:8px 12px;font-size:13px;font-weight:500;color:#fff;text-decoration:none;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(0,0,0,.3);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sub-link svg{margin-right:6px}
+
+/* Cores (cor sólida primeiro, degradê depois) */
+.c-dark{background:#1b212b;background:linear-gradient(135deg,#27303d,#121720)}
+.c-yellow{background:#e09000;background:linear-gradient(135deg,#f5a000,#c87a00)}
+.c-purple{background:#5e0f8c;background:linear-gradient(135deg,#7414a9,#4c0878)}
+.c-indigo{background:#4252b8;background:linear-gradient(135deg,#5365dc,#303e9d)}
+.c-blue{background:#0679b0;background:linear-gradient(135deg,#0796d5,#045d9a)}
+.c-red{background:#d02028;background:linear-gradient(135deg,#f13339,#b30e19)}
+
+/* Foco para controle remoto / teclado */
+a.btn:focus,.sub-link:focus,.mb:focus{outline:3px solid #fff;outline-offset:2px}
+a.btn:focus{border-color:#22b8a3}
+a.btn:hover{opacity:.92}
+a.btn:active{opacity:.8}
+
+footer{margin-top:30px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);text-align:center;font-size:12px;color:#737985}
+footer a{font-weight:500;color:#22b8a3;text-decoration:none}
+
+/* Janela de download */
+.ov{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:9;padding:14px;overflow-y:auto;background:#05070a;background:rgba(4,6,10,.94)}
+.ov.show{display:flex}
+.md{width:100%;max-width:440px;margin:auto;padding:24px 18px 18px;text-align:center;border-radius:18px;border:1px solid rgba(255,255,255,.15);background:#101a18}
+.circ{display:flex;align-items:center;justify-content:center;width:92px;height:92px;margin:0 auto 14px;border-radius:50%;border:3px solid #22b8a3;font-size:44px;font-weight:700}
+.circ.done{background:#22b8a3}
+.md h2{margin-bottom:4px;font-size:20px;font-weight:600;line-height:1.3;word-wrap:break-word}
+.st{min-height:21px;font-size:14px;color:#9da3b0}
+.bar{height:6px;margin:14px 0 16px;border-radius:6px;background:#2a3331;overflow:hidden}
+.bar i{display:block;width:0;height:100%;background:#22b8a3}
+.act{display:flex;flex-wrap:wrap;margin:0 -4px}
+.mb{display:block;flex:1 1 130px;min-height:48px;margin:4px;padding:13px 12px;font-family:inherit;font-size:14px;font-weight:600;line-height:1.2;color:#fff;text-align:center;text-decoration:none;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#26302e;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mb.pri{border-color:#22b8a3;background:#0f8172}
+.tip{margin-top:12px;padding:10px 12px;border-left:3px solid #22b8a3;background:#13221f;font-size:12.5px;line-height:1.5;text-align:left;color:#d3d8e0}
+.url{max-height:4.6em;margin-top:10px;padding:8px 10px;border:1px dashed rgba(255,255,255,.2);overflow:hidden;font-size:11px;text-align:left;color:#a9b0bd;word-break:break-all}
+
+@media (min-width:601px){.cell{width:50%}}
+@media (min-width:1000px){.cell{width:33.3333%}h1{font-size:32px}}
+@media (max-width:420px){.mb{flex-basis:100%}.md{padding:20px 14px 14px}}
+@media (min-width:1600px){
+.wrap{max-width:1300px}
+.btn{min-height:100px;padding:18px 24px}
+.ico{width:56px;height:56px}
+.txt strong,.ttl{font-size:20px}
+.txt small{font-size:14px}
+.sub-link{min-height:48px;font-size:15px}
+.md{max-width:620px;padding:34px 30px 28px}
+.circ{width:120px;height:120px;font-size:58px}
+.md h2{font-size:26px}
+.st{font-size:17px}
+.mb{min-height:60px;font-size:18px}
+.tip{font-size:15px}
+.url{font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<h1>Central de Aplicativos</h1>
+<p class="sub">Apps <b>atualizados</b> para seus dispositivos</p>
+</header>
+
+<div class="grid">
+
+<div class="cell">
+<a class="btn c-dark" href="https://clubneymar.com/cpa" data-name="cPlayer">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>cPlayer</strong><small>Player IPTV</small></span>
+</a>
+</div>
+
+<div class="cell">
+<a class="btn c-yellow" href="http://p1fast.com/PlayPro-7.0.apk" data-name="FastPro" data-code="5279242">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>FastPro</strong><small>Player IPTV</small></span>
+</a>
+</div>
+
+<div class="cell">
+<a class="btn c-purple" href="https://drive.usercontent.google.com/download?id=1t9aXwD2c9R-rGVEoMib_1_Y25MG5nag6&amp;export=download" data-name="QuickPlayer">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>QuickPlayer</strong><small>App Pago</small></span>
+</a>
+</div>
+
+<div class="cell">
+<div class="btn c-indigo group">
+<span class="ttl">UniTV</span>
+<span class="subs">
+<a class="sub-link" href="https://uvtpdw.playtro.click/tp/uv_4.21.0.apk" data-name="UniTV — TV Box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/></svg>TV Box</a>
+<a class="sub-link" href="https://htv.vftopibo.top/unitv-celular.apk" data-name="UniTV — Celular"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>Celular</a>
+</span>
+</div>
+</div>
+
+<div class="cell">
+<a class="btn c-blue" href="https://drive.google.com/uc?export=download&amp;id=1TrlPlOyJUIC8sIkNY_vd8ReVG_-xmveZ" data-name="XCIPTV">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>XCIPTV</strong><small>Player IPTV</small></span>
+</a>
+</div>
+
+<div class="cell">
+<a class="btn c-red" href="https://github.com/yuliskov/SmartTube/releases/download/latest/smarttube_stable.apk" data-name="SmartTube">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>SmartTube</strong><small>YouTube Mod</small></span>
+</a>
+</div>
+
+</div>
+
+<footer>
+© 2026 — Desenvolvido com IA por <a href="https://wa.me/+5574991162482">Rangel Viana</a>
+</footer>
+
+</div>
+
+<!-- Janela de download -->
+<div class="ov" id="ov">
+<div class="md">
+<div class="circ" id="circ">5</div>
+<h2 id="ttl">Preparando download</h2>
+<p class="st" id="st"></p>
+<div class="bar"><i id="bar"></i></div>
+<div class="act">
+<a class="mb pri" id="now" href="#">Baixar agora</a>
+<button type="button" class="mb" id="cp">Copiar link</button>
+<button type="button" class="mb" id="cl">Cancelar</button>
+</div>
+<p class="tip" id="tip"></p>
+<p class="url" id="url"></p>
+</div>
+</div>
+
+<script>
+/*
+  Central de Aplicativos (demo leve)
+  - ES5, sem bibliotecas, sem fontes/ícones externos.
+  - Se este script falhar, os links continuam funcionando normalmente.
+  - Adicione ?nav=0 ao endereço para desligar a navegação por setas
+    (útil se o cursor do navegador da TV parar de andar).
+*/
+(function () {
+  'use strict';
+
+  var COUNT = 5;                                   // segundos até baixar
+  var NAV = location.search.indexOf('nav=0') < 0;  // setas personalizadas
+
+  function $(id) { return document.getElementById(id); }
+  var ov = $('ov'), circ = $('circ'), ttl = $('ttl'), st = $('st'), bar = $('bar');
+  var now = $('now'), cp = $('cp'), cl = $('cl'), tip = $('tip'), urlBox = $('url');
+  var mbtns = [now, cp, cl];
+  var links = [].slice.call(document.querySelectorAll('a.btn, a.sub-link'));
+
+  var timer = null, copyT = null, lastFocus = null, cur = '', openedAt = 0;
+
+  var CHECK = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+  /* ----- Aparelho (só para a dica de instalação) ----- */
+  function device() {
+    var ua = navigator.userAgent || '';
+    var touch = navigator.maxTouchPoints || ('ontouchstart' in window ? 1 : 0);
+    if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && touch > 1)) return 'ios';
+    if (/Tizen|Web0S|WebOS|NetCast|VIDAA|SMART-?TV|HbbTV/i.test(ua)) return 'smarttv';
+    if (/BRAVIA|Android ?TV|GoogleTV|CrKey/i.test(ua) || /AFT[A-Z]/.test(ua)) return 'tv';
+    if (/Android/i.test(ua)) return touch ? 'android' : 'tv';
+    return 'desktop';
+  }
+  var TIPS = {
+    tv: 'Na TV Box: quando terminar, abra o arquivo baixado (pelo Downloader ou gerenciador de arquivos) e, se pedir, permita instalar de fontes desconhecidas.',
+    smarttv: 'Atenção: TVs Samsung e LG não instalam arquivos APK. Esses apps são para TV Box, Android TV ou Fire TV.',
+    android: 'No celular: quando terminar, toque na notificação do download para instalar. Se pedir, permita instalar de fontes desconhecidas.',
+    ios: 'Esses apps são para Android e não instalam no iPhone/iPad.',
+    desktop: 'No computador: esses apps são para Android. Baixe e passe o arquivo para sua TV Box ou celular Android.'
+  };
+  var dev = device();
+
+  /* ----- Barra de progresso (uma única transição CSS) ----- */
+  function barRun() {
+    bar.style.transition = 'none';
+    bar.style.width = '0';
+    void bar.offsetWidth;
+    bar.style.transition = 'width ' + COUNT + 's linear';
+    bar.style.width = '100%';
+  }
+  function barFull() {
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+  }
+
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+  function show(n) {
+    circ.textContent = n;
+    st.textContent = 'Seu download começa em ' + n + '…';
+  }
+
+  function started() {
+    stop();
+    circ.className = 'circ done';
+    circ.innerHTML = CHECK;
+    st.textContent = 'Download iniciado! Se nada aconteceu, toque em “Baixar novamente”.';
+    barFull();
+    now.textContent = 'Baixar novamente';
+    cl.textContent = 'Fechar';
+  }
+
+  function go() {
+    started();
+    window.location.href = cur;
+  }
+
+  function abrir(a) {
+    cur = a.getAttribute('href');
+    lastFocus = a;
+    openedAt = new Date().getTime();
+
+    ttl.textContent = a.getAttribute('data-name') || 'Aplicativo';
+    circ.className = 'circ';
+    now.href = cur;
+    now.textContent = 'Baixar agora';
+    cp.textContent = 'Copiar link';
+    cl.textContent = 'Cancelar';
+    urlBox.textContent = cur;
+
+    var d = TIPS[dev] || TIPS.desktop;
+    if (!/\.apk(\?|#|$)/i.test(cur) && (dev === 'tv' || dev === 'android')) {
+      d += ' Se abrir uma página em vez de baixar, siga as instruções que aparecerem.';
+    }
+    var code = a.getAttribute('data-code');
+    if (code && (dev === 'tv' || dev === 'android')) {
+      d += ' Se não baixar, abra o app Downloader e digite o código ' + code + '.';
+    }
+    tip.textContent = d;
+
+    ov.className = 'ov show';
+    document.body.className = 'lock';
+
+    var n = COUNT;
+    show(n);
+    barRun();
+    stop();
+    timer = setInterval(function () {
+      n--;
+      if (n > 0) { show(n); } else { go(); }
+    }, 1000);
+
+    now.focus();
+  }
+
+  function fechar() {
+    stop();
+    clearTimeout(copyT);
+    ov.className = 'ov';
+    document.body.className = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  /* ----- Copiar link ----- */
+  function copyOld(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) {}
+    document.body.removeChild(ta);
+    cp.focus();
+    return ok;
+  }
+  function copyMsg(ok) {
+    cp.textContent = ok ? 'Link copiado!' : 'Não foi possível copiar';
+    clearTimeout(copyT);
+    copyT = setTimeout(function () { cp.textContent = 'Copiar link'; }, 2200);
+  }
+  function copiar() {
+    var u = cur;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(u).then(
+        function () { copyMsg(true); },
+        function () { copyMsg(copyOld(u)); }
+      );
+    } else {
+      copyMsg(copyOld(u));
+    }
+  }
+
+  /* ----- Eventos ----- */
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function (e) {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return;
+      e.preventDefault();
+      abrir(this);
+    });
+  }
+
+  now.addEventListener('click', function (e) {
+    // Evita que o "OK" do controle, ainda pressionado ao abrir a janela,
+    // dispare o download na hora e pule a contagem.
+    if (new Date().getTime() - openedAt < 600) { e.preventDefault(); return; }
+    started();
+  });
+  cp.addEventListener('click', copiar);
+  cl.addEventListener('click', fechar);
+  ov.addEventListener('click', function (e) { if (e.target === ov) fechar(); });
+
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted && ov.className.indexOf('show') > -1) fechar();
+  });
+
+  /* ----- Controle remoto / teclado ----- */
+  var DIR = { 37: 'l', 38: 'u', 39: 'r', 40: 'd' };
+
+  function mid(el) {
+    var r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
+
+  function move(dir, list) {
+    var a = document.activeElement, k;
+    if (list.indexOf(a) < 0) { list[0].focus(); return; }
+    var c = mid(a), best = null, bs = 1e9;
+    for (k = 0; k < list.length; k++) {
+      if (list[k] === a) continue;
+      var p = mid(list[k]), dx = p.x - c.x, dy = p.y - c.y, main, cross, ok;
+      if (dir === 'r') { ok = dx > 5; main = dx; cross = Math.abs(dy); }
+      else if (dir === 'l') { ok = dx < -5; main = -dx; cross = Math.abs(dy); }
+      else if (dir === 'd') { ok = dy > 5; main = dy; cross = Math.abs(dx); }
+      else { ok = dy < -5; main = -dy; cross = Math.abs(dx); }
+      if (!ok) continue;
+      var s = main + cross * 3;
+      if (s < bs) { bs = s; best = list[k]; }
+    }
+    if (best) {
+      best.focus();
+      if (best.scrollIntoView && dir !== 'l' && dir !== 'r') {
+        var r = best.getBoundingClientRect();
+        if (r.top < 0 || r.bottom > (window.innerHeight || 0)) best.scrollIntoView(false);
+      }
+    }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var code = e.keyCode, key = e.key;
+    var dir = DIR[code];
+    var enter = key === 'Enter' || code === 13 || code === 23 || code === 66;
+    var back = key === 'Escape' || key === 'Esc' || key === 'GoBack' || key === 'BrowserBack' ||
+               code === 27 || code === 8 || code === 4 || code === 461 || code === 10009;
+    var open = ov.className.indexOf('show') > -1;
+
+    if (open) {
+      if (back) { e.preventDefault(); fechar(); return; }
+      if (key === 'Tab') {
+        e.preventDefault();
+        var i = mbtns.indexOf(document.activeElement);
+        i += e.shiftKey ? -1 : 1;
+        if (i < 0) i = mbtns.length - 1;
+        if (i >= mbtns.length) i = 0;
+        mbtns[i].focus();
+        return;
+      }
+      if (dir && NAV) { e.preventDefault(); move(dir, mbtns); }
+      return;
+    }
+
+    if (enter && !e.repeat) {
+      var idx = links.indexOf(document.activeElement);
+      if (idx > -1) { e.preventDefault(); abrir(links[idx]); return; }
+    }
+    if (dir && NAV) { e.preventDefault(); move(dir, links); }
+  });
+})();
+</script>
+
+</body>
+</html>
