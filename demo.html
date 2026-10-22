@@ -19,39 +19,28 @@ h1{font-size:26px;font-weight:700}
 /* Grade em flexbox (funciona em Android antigo) */
 .grid{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -8px}
 .cell{width:100%;padding:8px}
-.btn{display:flex;align-items:center;min-height:76px;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.12);color:#fff;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn{display:flex;align-items:center;min-height:76px;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:#161933;color:#fff;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .ico{display:flex;align-items:center;justify-content:center;width:46px;height:46px;flex:none;border-radius:12px;background:rgba(0,0,0,.25)}
 .txt{min-width:0;margin-left:14px;overflow:hidden}
 .txt strong{display:block;font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.txt small{display:block;margin-top:2px;font-size:12px;color:#e6e6e6}
+.txt small{display:block;margin-top:2px;font-size:12px;color:#9da3b0}
+.txt small.pago{display:inline-block;margin-top:4px;padding:1px 9px;border-radius:20px;border:1px solid rgba(143,164,255,.4);background:rgba(143,164,255,.14);font-size:11px;font-weight:600;color:#c3ceff}
 
 /* Cores (cor sólida primeiro, degradê depois) */
-/* cPlayer: preto com play vermelho */
-.c-cplayer{background:#121212;background:linear-gradient(135deg,#1f1f1f,#0a0a0a);border-color:rgba(229,57,53,.55)}
+/* Cartões neutros: a cor da marca fica só no ícone */
 .c-cplayer .ico{background:#e53935;border-color:rgba(255,255,255,.2)}
-/* QuickPlayer: roxo com detalhe laranja */
-.c-quick{background:#4f1080;background:linear-gradient(135deg,#5b1495,#3d0a6f)}
+.c-fast .ico{background:#ee5a0a;background:linear-gradient(135deg,#ffb000,#ee5a0a);border-color:rgba(255,255,255,.25)}
 .c-quick .ico{background:#ff8a00;background:linear-gradient(135deg,#ffa01a,#f57c00);border-color:rgba(255,255,255,.25)}
-/* UniTV: azul-marinho com ícone no degradê do logo */
-.c-unitv{background:#1a4a96;background:linear-gradient(135deg,#1f58ac,#12346e)}
 .c-unitv .ico{background:#cc1a1a;background:linear-gradient(135deg,#e39a2d,#cc1a1a 42%,#6b4a9c 72%,#3a5aa5);border-color:rgba(255,255,255,.3)}
-/* XCIPTV: azul com ícone branco */
-.c-xc{background:#0f7fd0;background:linear-gradient(135deg,#1a93e6,#0a5fae)}
 .c-xc .ico{background:#fff;border-color:rgba(255,255,255,.6)}
 .c-xc .ico svg{stroke:#0f6fc6}
-/* SmartTube: vermelho com ícone branco */
-.c-smart{background:#e52d27;background:linear-gradient(135deg,#ee3a33,#c9201a)}
-.c-smart .ico{background:#fff;border-color:rgba(255,255,255,.6)}
-.c-smart .ico svg{stroke:#e52d27}
-.c-fast{background:#f26a0a;background:linear-gradient(135deg,#ff9a0a,#e2500a);border-color:rgba(255,200,60,.45)}
-.c-fast .ico{background:#141414;border-color:rgba(255,190,0,.55)}
-.c-dream{background:#2b0b6e;background:linear-gradient(135deg,#3a1296,#1d0550);border-color:rgba(214,120,255,.35)}
 .c-dream .ico{background:#a23ed0;background:linear-gradient(135deg,#e1279d,#7b3fe4 55%,#22b9df);border-color:rgba(255,255,255,.25)}
+.c-smart .ico{background:#e52d27;border-color:rgba(255,255,255,.25)}
 
 /* Foco para controle remoto / teclado */
 a.btn:focus,.mb:focus{outline:3px solid #fff;outline-offset:2px}
 a.btn:focus{border-color:#8fa4ff}
-a.btn:hover{opacity:.92}
+a.btn:hover{background:#1e2247}
 a.btn:active{opacity:.8}
 
 footer{margin-top:30px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);text-align:center;font-size:12px;color:#737985}
@@ -119,7 +108,7 @@ footer a{font-weight:500;color:#8fa4ff;text-decoration:none}
 <div class="cell">
 <a class="btn c-quick" href="https://github.com/rvob/apps/releases/download/app/qp.apk" data-name="QuickPlayer">
 <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
-<span class="txt"><strong>QuickPlayer</strong><small>App Pago</small></span>
+<span class="txt"><strong>QuickPlayer</strong><small class="pago">App Pago</small></span>
 </a>
 </div>
 
@@ -140,7 +129,7 @@ footer a{font-weight:500;color:#8fa4ff;text-decoration:none}
 <div class="cell">
 <a class="btn c-dream" href="https://github.com/rvob/apps/releases/download/app/dtv.apk" data-name="DreamTV">
 <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
-<span class="txt"><strong>DreamTV</strong><small>App Pago</small></span>
+<span class="txt"><strong>DreamTV</strong><small class="pago">App Pago</small></span>
 </a>
 </div>
 
