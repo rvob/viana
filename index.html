@@ -2,870 +2,408 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="language" content="pt-BR">
-<meta name="geo.region" content="BR">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0b14">
+<meta name="description" content="Central de Aplicativos: baixe players IPTV e apps atualizados para TV Box, celular e computador.">
 <title>Central de Aplicativos</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+<link rel="icon" type="image/png" href="data:image/png;base64,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">
 <style>
-:root {
-    --bg: #08090d;
-    --text: #ffffff;
-    --muted: #9da3b0;
-    --radius: 16px;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:#0a0b14}
+body{min-height:100vh;padding:22px 14px 20px;font-family:Roboto,"Helvetica Neue",Arial,sans-serif;color:#fff;background:#0a0b14;background:radial-gradient(circle at 10% 0,rgba(96,56,200,.40) 0,rgba(96,56,200,0) 45%),radial-gradient(circle at 100% 100%,rgba(16,110,200,.28) 0,rgba(16,110,200,0) 48%),#0a0b14;-webkit-text-size-adjust:100%}
+body.lock{overflow:hidden}
+.wrap{max-width:1050px;margin:0 auto}
+header{margin-bottom:20px;text-align:center}
+h1{font-size:26px;font-weight:700}
+.sub{margin-top:4px;font-size:14px;color:#9da3b0}
+.sub b{font-weight:400;color:#8fa4ff}
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* Grade em flexbox (funciona em Android antigo) */
+.grid{display:flex;flex-wrap:wrap;justify-content:center;margin:0 -8px}
+.cell{width:100%;padding:8px}
+.btn{display:flex;align-items:center;min-height:76px;padding:12px 16px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:#161933;color:#fff;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ico{display:flex;align-items:center;justify-content:center;width:46px;height:46px;flex:none;border-radius:12px;background:rgba(0,0,0,.25)}
+.txt{min-width:0;margin-left:14px;overflow:hidden}
+.txt strong{display:block;font-size:16px;font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txt small{display:block;margin-top:2px;font-size:12px;color:#9da3b0}
+.txt small.pago{display:inline-block;margin-top:4px;padding:1px 9px;border-radius:20px;border:1px solid rgba(143,164,255,.4);background:rgba(143,164,255,.14);font-size:11px;font-weight:600;color:#c3ceff}
 
-html {
-    scroll-behavior: smooth;
-}
+/* Cores (cor sólida primeiro, degradê depois) */
+/* Cartões neutros: a cor da marca fica só no ícone */
+.c-cplayer .ico{background:#e53935;border-color:rgba(255,255,255,.2)}
+.c-fast .ico{background:#ee5a0a;background:linear-gradient(135deg,#ffb000,#ee5a0a);border-color:rgba(255,255,255,.25)}
+.c-quick .ico{background:#ff8a00;background:linear-gradient(135deg,#ffa01a,#f57c00);border-color:rgba(255,255,255,.25)}
+.c-unitv .ico{background:#cc1a1a;background:linear-gradient(135deg,#e39a2d,#cc1a1a 42%,#6b4a9c 72%,#3a5aa5);border-color:rgba(255,255,255,.3)}
+.c-xc .ico{background:#fff;border-color:rgba(255,255,255,.6)}
+.c-xc .ico svg{stroke:#0f6fc6}
+.c-dream .ico{background:#a23ed0;background:linear-gradient(135deg,#e1279d,#7b3fe4 55%,#22b9df);border-color:rgba(255,255,255,.25)}
+.c-smart .ico{background:#e52d27;border-color:rgba(255,255,255,.25)}
 
-body {
-    min-height: 100vh;
-    min-height: 100dvh;
-    font-family: 'Poppins', sans-serif;
-    color: var(--text);
-    background: radial-gradient(circle at 15% 0%, #10312C 0%, #08090d 45%);
-    padding: 22px 18px 20px;
-    padding: max(22px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
-    overflow-x: hidden;
-}
+/* Foco para controle remoto / teclado */
+a.btn:focus,.mb:focus{outline:3px solid #fff;outline-offset:2px}
+a.btn:focus{border-color:#8fa4ff}
+a.btn:hover{background:#1e2247}
+a.btn:active{opacity:.8}
 
-.container {
-    width: 100%;
-    max-width: 1050px;
-    margin: 0 auto;
-}
+footer{margin-top:30px;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);text-align:center;font-size:12px;color:#737985}
+footer a{font-weight:500;color:#8fa4ff;text-decoration:none}
 
-/* CABEÇALHO */
-header {
-    text-align: center;
-    margin-bottom: 22px;
-}
+/* Janela de download */
+.ov{display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:9;padding:14px;overflow-y:auto;background:#06070d;background:rgba(5,6,12,.95)}
+.ov.show{display:flex}
+.md{width:100%;max-width:440px;margin:auto;padding:24px 18px 18px;text-align:center;border-radius:18px;border:1px solid rgba(255,255,255,.15);background:#13152a}
+.circ{display:flex;align-items:center;justify-content:center;width:92px;height:92px;margin:0 auto 14px;border-radius:50%;border:3px solid #8fa4ff;font-size:44px;font-weight:700}
+.circ.done{background:#5a52e0}
+.md h2{margin-bottom:4px;font-size:20px;font-weight:600;line-height:1.3;word-wrap:break-word}
+.st{min-height:21px;font-size:14px;color:#9da3b0}
+.bar{height:6px;margin:14px 0 16px;border-radius:6px;background:#2b2f45;overflow:hidden}
+.bar i{display:block;width:0;height:100%;background:#8fa4ff}
+.act{display:flex;flex-wrap:wrap;margin:0 -4px}
+.mb{display:block;flex:1 1 130px;min-height:48px;margin:4px;padding:13px 12px;font-family:inherit;font-size:14px;font-weight:600;line-height:1.2;color:#fff;text-align:center;text-decoration:none;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#2a2e47;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mb.pri{border-color:#8fa4ff;background:#4b44c9}
+.tip{margin-top:12px;padding:10px 12px;border-left:3px solid #8fa4ff;background:#181b30;font-size:12.5px;line-height:1.5;text-align:left;color:#d3d8e0}
+.url{max-height:4.6em;margin-top:10px;padding:8px 10px;border:1px dashed rgba(255,255,255,.2);overflow:hidden;font-size:11px;text-align:left;color:#a9b0bd;word-break:break-all}
 
-h1 {
-    font-size: 28px;
-    font-size: clamp(24px, 4vw, 34px);
-    font-weight: 700;
-    letter-spacing: -.5px;
-}
-
-.subtitle {
-    color: var(--muted);
-    font-size: 14px;
-    margin-top: 4px;
-}
-
-.subtitle span {
-    color: #22B8A3;
-}
-
-/* GRID & BOTÕES */
-.buttons-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
-}
-
-.button {
-    display: flex;
-    align-items: center;
-    min-height: 80px;
-    padding: 14px 18px;
-    border-radius: var(--radius);
-    color: #fff;
-    text-decoration: none;
-    border: 1px solid rgba(255, 255, 255, .1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
-    transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
-    animation: cardIn .4s ease both;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-}
-
-/* Card Composto para UniTV */
-.button-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 80px;
-    padding: 14px 18px; /* Padronizado com os outros botões */
-    border-radius: var(--radius);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, .1);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
-    animation: cardIn .4s ease both;
-}
-
-.unitv-title {
-    display: flex;
-    align-items: center;
-}
-
-.unitv-title i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px; /* Padronizado com os outros ícones */
-    height: 46px; /* Padronizado com os outros ícones */
-    flex-shrink: 0;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, .2);
-    border: 1px solid rgba(255, 255, 255, .1);
-    font-size: 18px; /* Padronizado com os outros ícones */
-}
-
-.unitv-title strong {
-    font-size: 16px;
-    font-weight: 600;
-    margin-left: 14px; /* Padronizado com o alinhamento de texto dos outros */
-}
-
-.unitv-links {
-    display: flex;
-    gap: 6px;
-}
-
-.btn-sublink {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 10px;
-    min-height: 40px;
-    background: rgba(0, 0, 0, .25);
-    border: 1px solid rgba(255, 255, 255, .15);
-    border-radius: 10px;
-    color: #fff;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 500;
-    transition: transform .2s ease, background .2s ease;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-}
-
-.btn-sublink:hover {
-    background: rgba(255, 255, 255, .2);
-    transform: translateY(-2px);
-}
-
-.btn-sublink:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px #fff;
-}
-
-/* Gradientes dos Botões */
-.btn-purple { background: linear-gradient(135deg, #7414a9, #4c0878); }
-.btn-blue   { background: linear-gradient(135deg, #0796d5, #045d9a); }
-.btn-dark   { background: linear-gradient(135deg, #27303d, #121720); }
-.btn-red    { background: linear-gradient(135deg, #f13339, #b30e19); }
-.btn-indigo { background: linear-gradient(135deg, #5365dc, #303e9d); }
-.btn-orange { background: linear-gradient(135deg, #ff8b19, #dc5900); }
-.btn-yellow { background: linear-gradient(135deg, #f5a000, #c87a00); }
-.btn-green  { background: linear-gradient(135deg, #10b981, #047857); }
-
-.button:hover {
-    transform: translateY(-3px);
-    filter: brightness(1.1);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, .35);
-}
-
-.button:active {
-    transform: scale(.98);
-}
-
-/* Foco para controle de TV / Teclado */
-.button:focus-visible {
-    outline: none;
-    transform: translateY(-3px) scale(1.01);
-    box-shadow: 0 0 0 3px #fff, 0 0 0 6px #22B8A3;
-}
-
-/* ÍCONE E TEXTO */
-.button i {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    flex-shrink: 0;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, .2);
-    border: 1px solid rgba(255, 255, 255, .1);
-    font-size: 18px;
-}
-
-.btn-text {
-    display: flex;
-    flex-direction: column;
-    margin-left: 14px;
-    overflow: hidden;
-}
-
-.btn-text strong {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.btn-text small {
-    margin-top: 2px;
-    color: rgba(255, 255, 255, .75);
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* FOOTER */
-footer {
-    text-align: center;
-    margin-top: 34px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, .06);
-    color: #737985;
-    font-size: 12px;
-}
-
-footer a {
-    color: #22B8A3;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-footer a:hover {
-    color: #E4FAF4;
-}
-
-/* ANIMAÇÕES */
-@keyframes cardIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ADAPTAÇÕES RESPONSIVAS */
-@media(max-width: 600px) {
-    body { padding: 20px 12px; }
-    .buttons-grid { grid-template-columns: 1fr; gap: 12px; }
-    .button, .button-group { min-height: 72px; padding: 12px 14px; }
-}
-
-@media(min-width: 601px) and (max-width: 900px) {
-    .buttons-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media(min-width: 1200px) {
-    .buttons-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-/* Telas grandes de TV (assistidas a distância) */
-@media(min-width: 1600px) {
-    .container { max-width: 1300px; }
-    .button, .button-group { min-height: 100px; padding: 18px 24px; }
-    .btn-text strong, .unitv-title strong { font-size: 20px; }
-    .btn-text small { font-size: 14px; }
-    .button i, .unitv-title i { width: 56px; height: 56px; font-size: 22px; }
-}
-
-@media(prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-
-/* ============================================================
-   FOCO VISÍVEL TAMBÉM EM NAVEGADORES ANTIGOS (sem :focus-visible)
-   ============================================================ */
-.button:focus,
-.btn-sublink:focus,
-.btn-modal:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px #fff, 0 0 0 6px #22B8A3;
-}
-.button:focus:not(:focus-visible) { box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
-.btn-sublink:focus:not(:focus-visible),
-.btn-modal:focus:not(:focus-visible) { box-shadow: none; }
-
-/* ============================================================
-   MODAL DE DOWNLOAD (contagem regressiva)
-   ============================================================ */
-html.modal-open,
-html.modal-open body { overflow: hidden; }
-
-.overlay {
-    position: fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    background: rgba(4, 6, 10, .82);
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    overflow-y: auto;
-    animation: fadeIn .2s ease both;
-}
-.overlay[hidden] { display: none; }
-
-.modal {
-    width: 100%;
-    max-width: 460px;
-    margin: auto;
-    padding: 28px 22px 22px;
-    text-align: center;
-    border-radius: 20px;
-    background: linear-gradient(160deg, #142a27, #0b0e14 60%);
-    border: 1px solid rgba(255, 255, 255, .12);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
-}
-
-.dl-circle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 96px;
-    height: 96px;
-    margin: 0 auto 16px;
-    border-radius: 50%;
-    border: 3px solid #22B8A3;
-    background: rgba(34, 184, 163, .1);
-    font-size: 46px;
-    font-weight: 700;
-    color: #fff;
-}
-.dl-circle.done { background: #22B8A3; font-size: 40px; }
-
-.modal h2 {
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 4px;
-    word-break: break-word;
-}
-
-.dl-status {
-    min-height: 21px;
-    color: var(--muted);
-    font-size: 14px;
-}
-
-.dl-progress {
-    height: 6px;
-    margin: 16px 0 18px;
-    border-radius: 99px;
-    background: rgba(255, 255, 255, .1);
-    overflow: hidden;
-}
-.dl-progress span {
-    display: block;
-    width: 0;
-    height: 100%;
-    border-radius: 99px;
-    background: linear-gradient(90deg, #22B8A3, #5fe3cf);
-}
-.dl-progress.run span  { animation: fillBar 3s linear forwards; }
-.dl-progress.done span { width: 100%; }
-
-.modal-actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 0 -5px;
-}
-
-.btn-modal {
-    flex: 1 1 140px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-    margin: 5px;
-    padding: 10px 14px;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    text-align: center;
-    text-decoration: none;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, .18);
-    background: rgba(255, 255, 255, .08);
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    transition: transform .15s ease, background .15s ease;
-}
-.btn-modal i { margin-right: 8px; }
-.btn-modal:hover { background: rgba(255, 255, 255, .16); }
-.btn-modal.primary { background: linear-gradient(135deg, #22B8A3, #0f8172); border-color: transparent; }
-.btn-modal.primary:hover { background: linear-gradient(135deg, #2ccfb8, #12967f); }
-.btn-modal:focus-visible { transform: scale(1.03); }
-
-.dl-tip {
-    margin-top: 14px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    border-left: 3px solid #22B8A3;
-    background: rgba(34, 184, 163, .08);
-    color: #d3d8e0;
-    font-size: 12.5px;
-    line-height: 1.5;
-    text-align: left;
-}
-
-.dl-url {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-top: 12px;
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: 1px dashed rgba(255, 255, 255, .15);
-    background: rgba(0, 0, 0, .35);
-    color: #a9b0bd;
-    font-size: 11px;
-    text-align: left;
-    word-break: break-all;
-}
-
-@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fillBar { from { width: 0; } to { width: 100%; } }
-
-@media(max-width: 420px) {
-    .modal { padding: 24px 16px 18px; }
-    .btn-modal { flex-basis: 100%; }
-}
-
-/* TV: modal maior para leitura a distância */
-@media(min-width: 1600px) {
-    .modal { max-width: 620px; padding: 36px 32px 30px; }
-    .dl-circle { width: 120px; height: 120px; font-size: 58px; }
-    .modal h2 { font-size: 26px; }
-    .dl-status { font-size: 17px; }
-    .btn-modal { min-height: 60px; font-size: 18px; }
-    .dl-tip { font-size: 15px; }
-    .dl-url { font-size: 13px; }
+@media (min-width:601px){.cell{width:50%}}
+@media (min-width:1000px){.cell{width:33.3333%}h1{font-size:32px}}
+@media (max-width:420px){.mb{flex-basis:100%}.md{padding:20px 14px 14px}}
+@media (min-width:1600px){
+.wrap{max-width:1300px}
+.btn{min-height:100px;padding:18px 24px}
+.ico{width:56px;height:56px}
+.txt strong{font-size:20px}
+.txt small{font-size:14px}
+.md{max-width:620px;padding:34px 30px 28px}
+.circ{width:120px;height:120px;font-size:58px}
+.md h2{font-size:26px}
+.st{font-size:17px}
+.mb{min-height:60px;font-size:18px}
+.tip{font-size:15px}
+.url{font-size:13px}
 }
 </style>
 </head>
-
 <body>
-
-<div class="container">
+<div class="wrap">
 
 <header>
-    <h1>Central de Aplicativos</h1>
-    <p class="subtitle">Apps <span>atualizados</span> para seus dispositivos</p>
+<h1>Central de Aplicativos</h1>
+<p class="sub">Apps <b>atualizados</b> para seus dispositivos</p>
 </header>
 
-<main class="buttons-grid">
+<div class="grid">
 
-    <!-- cPlayer -->
-    <a href="https://clubneymar.com/cpa" target="_blank" rel="noopener noreferrer" class="button btn-dark" aria-label="Baixar cPlayer IPTV">
-        <i class="fa-solid fa-download"></i>
-        <span class="btn-text">
-            <strong>cPlayer</strong>
-            <small>Player IPTV</small>
-        </span>
-    </a>
-	
-    <!-- FastPro -->
-    <a href="http://p1fast.com/PlayPro-7.0.apk" target="_blank" rel="noopener noreferrer" class="button btn-yellow" aria-label="Baixar FastPro Player IPTV">
-        <i class="fa-solid fa-download"></i>
-        <span class="btn-text">
-            <strong>FastPro</strong>
-            <small>Player IPTV</small>
-        </span>
-    </a>
+<div class="cell">
+<a class="btn c-cplayer" href="https://clubneymar.com/cpa" data-name="cPlayer">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>cPlayer</strong><small>Player IPTV</small></span>
+</a>
+</div>
 
-    <!-- QuickPlayer -->
-    <a href="https://drive.usercontent.google.com/download?id=1t9aXwD2c9R-rGVEoMib_1_Y25MG5nag6&export=download" target="_blank" rel="noopener noreferrer" class="button btn-purple" aria-label="Baixar QuickPlayer">
-        <i class="fa-solid fa-download"></i>
-        <span class="btn-text">
-            <strong>QuickPlayer</strong>
-            <small>App Pago</small>
-        </span>
-    </a>
-    
-    <!-- UniTV (Unificado: TV Box e Celular na mesma linha) -->
-    <div class="button-group btn-indigo">
-        <div class="unitv-title">
+<div class="cell">
+<a class="btn c-fast" href="https://github.com/rvob/apps/releases/download/app/fp.apk" data-name="FastPro">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>FastPro</strong><small>Player IPTV</small></span>
+</a>
+</div>
 
-            <strong>UniTV</strong>
-        </div>
-        <div class="unitv-links">
-            <a href="https://uvtpdw.playtro.click/tp/uv_4.21.0.apk" target="_blank" rel="noopener noreferrer" class="btn-sublink" aria-label="Baixar UniTV para TV Box">
-                <i class="fa-solid fa-tv"></i> TV Box
-            </a>
-            <a href="https://htv.vftopibo.top/unitv-celular.apk" target="_blank" rel="noopener noreferrer" class="btn-sublink" aria-label="Baixar UniTV para Celular">
-                <i class="fa-solid fa-mobile-screen-button"></i> Celular
-            </a>
-        </div>
-    </div>
+<div class="cell">
+<a class="btn c-quick" href="https://github.com/rvob/apps/releases/download/app/qp.apk" data-name="QuickPlayer">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>QuickPlayer</strong><small class="pago">App Pago</small></span>
+</a>
+</div>
 
-    <!-- XCIPTV -->
-    <a href="https://drive.google.com/uc?export=download&id=1TrlPlOyJUIC8sIkNY_vd8ReVG_-xmveZ" target="_blank" rel="noopener noreferrer" class="button btn-blue" aria-label="Baixar XCIPTV">
-        <i class="fa-solid fa-download"></i>
-        <span class="btn-text">
-            <strong>XCIPTV</strong>
-            <small>Player IPTV</small>
-        </span>
-    </a>
+<div class="cell">
+<a class="btn c-unitv" href="https://github.com/rvob/apps/releases/download/app/utv.apk" data-name="UniTV">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>UniTV</strong><small>Player IPTV</small></span>
+</a>
+</div>
 
-    <!-- SmartTube -->
-    <a href="https://github.com/yuliskov/SmartTube/releases/download/latest/smarttube_stable.apk" target="_blank" rel="noopener noreferrer" class="button btn-red" aria-label="Baixar SmartTube">
-        <i class="fa-solid fa-download"></i>
-        <span class="btn-text">
-            <strong>SmartTube</strong>
-            <small>YouTube Mod</small>
-        </span>
-    </a>
+<div class="cell">
+<a class="btn c-xc" href="https://github.com/rvob/apps/releases/download/app/xtv.apk" data-name="XCIPTV">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>XCIPTV</strong><small>Player IPTV</small></span>
+</a>
+</div>
 
-</main>
+<div class="cell">
+<a class="btn c-dream" href="https://github.com/rvob/apps/releases/download/app/dtv.apk" data-name="DreamTV">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>DreamTV</strong><small class="pago">App Pago</small></span>
+</a>
+</div>
+
+<div class="cell">
+<a class="btn c-smart" href="https://github.com/yuliskov/SmartTube/releases/download/latest/smarttube_stable.apk" data-name="SmartTube">
+<span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 11l5 5 5-5M5 20h14"/></svg></span>
+<span class="txt"><strong>SmartTube</strong><small>YouTube Mod</small></span>
+</a>
+</div>
+
+</div>
 
 <footer>
-© 2026 — Desenvolvido com IA por <a href="https://wa.me/+5574991162482" target="_blank" rel="noopener noreferrer">Rangel Viana</a>
+© 2026 — Desenvolvido com IA por <a href="https://wa.me/+5574991162482">Rangel Viana</a>
 </footer>
 
 </div>
 
-<!-- Modal de download com contagem regressiva -->
-<div class="overlay" id="overlay" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlTitle" aria-describedby="dlStatus">
-        <div class="dl-circle" id="dlCircle" aria-hidden="true">3</div>
-        <h2 id="dlTitle">Preparando download</h2>
-        <p class="dl-status" id="dlStatus" role="status" aria-live="polite">Seu download começa em 3…</p>
-        <div class="dl-progress" id="dlProgress" aria-hidden="true"><span></span></div>
-
-        <div class="modal-actions">
-            <a class="btn-modal primary" id="dlNow" href="#"><i class="fa-solid fa-download"></i>Baixar agora</a>
-            <button type="button" class="btn-modal" id="dlCopy"><i class="fa-regular fa-copy"></i>Copiar link</button>
-            <button type="button" class="btn-modal" id="dlClose">Cancelar</button>
-        </div>
-
-        <p class="dl-tip" id="dlTip"></p>
-        <div class="dl-url" id="dlUrl"></div>
-    </div>
+<!-- Janela de download -->
+<div class="ov" id="ov">
+<div class="md">
+<div class="circ" id="circ">5</div>
+<h2 id="ttl">Preparando download</h2>
+<p class="st" id="st"></p>
+<div class="bar"><i id="bar"></i></div>
+<div class="act">
+<a class="mb pri" id="now" href="#">Baixar agora</a>
+<button type="button" class="mb" id="cp">Copiar link</button>
+<button type="button" class="mb" id="cl">Cancelar</button>
+</div>
+<p class="tip" id="tip"></p>
+<p class="url" id="url"></p>
+</div>
 </div>
 
 <script>
-/* ==============================================================
-   CENTRAL DE APLICATIVOS - DOWNLOAD COM CONTAGEM REGRESSIVA
-
-   - Ao clicar/OK em um app, abre um modal na própria página
-     (sem nova aba: vários TV Box/WebViews não suportam).
-   - Contagem 3-2-1 e o download inicia sozinho.
-   - "Baixar agora" é um link normal (<a href>), então funciona
-     mesmo se o automático for bloqueado pelo navegador.
-   - Código escrito em ES5 para rodar em navegadores antigos.
-   =============================================================== */
+/*
+  Central de Aplicativos
+  - ES5, sem bibliotecas, sem fontes/ícones externos.
+  - Se este script falhar, os links continuam funcionando normalmente.
+  - Adicione ?nav=0 ao endereço para desligar a navegação por setas
+    (útil se o cursor do navegador da TV parar de andar).
+*/
 (function () {
-    'use strict';
+  'use strict';
 
-    var COUNTDOWN = 5; // segundos até iniciar o download
+  var COUNT = 5;                                   // segundos até baixar
+  var NAV = location.search.indexOf('nav=0') < 0;  // setas personalizadas
 
-    var overlay  = document.getElementById('overlay');
-    var elCircle = document.getElementById('dlCircle');
-    var elTitle  = document.getElementById('dlTitle');
-    var elStatus = document.getElementById('dlStatus');
-    var elProg   = document.getElementById('dlProgress');
-    var btnNow   = document.getElementById('dlNow');
-    var btnCopy  = document.getElementById('dlCopy');
-    var btnClose = document.getElementById('dlClose');
-    var elTip    = document.getElementById('dlTip');
-    var elUrl    = document.getElementById('dlUrl');
+  function $(id) { return document.getElementById(id); }
+  var ov = $('ov'), circ = $('circ'), ttl = $('ttl'), st = $('st'), bar = $('bar');
+  var now = $('now'), cp = $('cp'), cl = $('cl'), tip = $('tip'), urlBox = $('url');
+  var mbtns = [now, cp, cl];
+  var links = [].slice.call(document.querySelectorAll('a.btn'));
 
-    var modalBtns = [btnNow, btnCopy, btnClose];
-    var links = Array.prototype.slice.call(document.querySelectorAll('a.button, a.btn-sublink'));
+  var timer = null, copyT = null, lastFocus = null, cur = '', openedAt = 0;
 
-    var timer = null, copyTimer = null, lastFocus = null, currentUrl = '';
+  var CHECK = '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 
-    /* ---------- Detecção de dispositivo (só para a dica de instalação) ---------- */
-    function detectDevice() {
-        var ua = navigator.userAgent || '';
-        var touch = navigator.maxTouchPoints || ('ontouchstart' in window ? 1 : 0);
+  /* ----- Aparelho (só para a dica de instalação) ----- */
+  function device() {
+    var ua = navigator.userAgent || '';
+    var touch = navigator.maxTouchPoints || ('ontouchstart' in window ? 1 : 0);
+    if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && touch > 1)) return 'ios';
+    if (/Tizen|Web0S|WebOS|NetCast|VIDAA|SMART-?TV|HbbTV/i.test(ua)) return 'smarttv';
+    if (/BRAVIA|Android ?TV|GoogleTV|CrKey/i.test(ua) || /AFT[A-Z]/.test(ua)) return 'tv';
+    if (/Android/i.test(ua)) return touch ? 'android' : 'tv';
+    return 'desktop';
+  }
+  var TIPS = {
+    tv: 'Na TV Box: quando terminar, abra o arquivo baixado (pelo Downloader ou gerenciador de arquivos) e, se pedir, permita instalar de fontes desconhecidas.',
+    smarttv: 'Atenção: TVs Samsung e LG não instalam arquivos APK. Esses apps são para TV Box, Android TV ou Fire TV.',
+    android: 'No celular: quando terminar, toque na notificação do download para instalar. Se pedir, permita instalar de fontes desconhecidas.',
+    ios: 'Esses apps são para Android e não instalam no iPhone/iPad.',
+    desktop: 'No computador: esses apps são para Android. Baixe e passe o arquivo para sua TV Box ou celular Android.'
+  };
+  var dev = device();
 
-        if (/iPhone|iPad|iPod/i.test(ua) || (/Macintosh/i.test(ua) && touch > 1)) return 'ios';
-        if (/Tizen|Web0S|WebOS|NetCast|VIDAA|SMART-?TV|HbbTV/i.test(ua)) return 'smarttv';
-        if (/BRAVIA|Android ?TV|GoogleTV|CrKey/i.test(ua) || /AFT[A-Z]/.test(ua)) return 'tv';
-        if (/Android/i.test(ua)) return touch ? 'android' : 'tv'; // Android sem toque = TV Box
-        return 'desktop';
+  /* ----- Barra de progresso (uma única transição CSS) ----- */
+  function barRun() {
+    bar.style.transition = 'none';
+    bar.style.width = '0';
+    void bar.offsetWidth;
+    bar.style.transition = 'width ' + COUNT + 's linear';
+    bar.style.width = '100%';
+  }
+  function barFull() {
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+  }
+
+  function stop() { if (timer) { clearInterval(timer); timer = null; } }
+
+  function show(n) {
+    circ.textContent = n;
+    st.textContent = 'Seu download começa em ' + n + '…';
+  }
+
+  function started() {
+    stop();
+    circ.className = 'circ done';
+    circ.innerHTML = CHECK;
+    st.textContent = 'Download iniciado! Se nada aconteceu, toque em “Baixar novamente”.';
+    barFull();
+    now.textContent = 'Baixar novamente';
+    cl.textContent = 'Fechar';
+  }
+
+  function go() {
+    started();
+    window.location.href = cur;
+  }
+
+  function abrir(a) {
+    cur = a.getAttribute('href');
+    lastFocus = a;
+    openedAt = new Date().getTime();
+
+    ttl.textContent = a.getAttribute('data-name') || 'Aplicativo';
+    circ.className = 'circ';
+    now.href = cur;
+    now.textContent = 'Baixar agora';
+    cp.textContent = 'Copiar link';
+    cl.textContent = 'Cancelar';
+    urlBox.textContent = cur;
+
+    var d = TIPS[dev] || TIPS.desktop;
+    if (!/\.apk(\?|#|$)/i.test(cur) && (dev === 'tv' || dev === 'android')) {
+      d += ' Se abrir uma página em vez de baixar, siga as instruções que aparecerem.';
     }
+    tip.textContent = d;
 
-    var TIPS = {
-        tv: 'Na TV Box / Android TV: quando o download terminar, abra o arquivo (pelo Downloader ou gerenciador de arquivos) e, se pedir, permita instalar de fontes desconhecidas.',
-        smarttv: 'Atenção: TVs Samsung (Tizen) e LG (webOS) não instalam arquivos APK. Esses apps são para TV Box, Android TV ou Fire TV.',
-        android: 'No celular: quando terminar, toque na notificação do download para instalar. Se pedir, permita instalar de fontes desconhecidas.',
-        ios: 'Esses apps são para Android e não instalam no iPhone/iPad. Abra esta página em um aparelho Android.',
-        desktop: 'No computador: esses apps são para Android e não instalam no Windows/Mac. Baixe e passe o arquivo para sua TV Box ou celular Android (pendrive, Bluetooth ou nuvem).'
-    };
+    ov.className = 'ov show';
+    document.body.className = 'lock';
 
-    var device = detectDevice();
+    var n = COUNT;
+    show(n);
+    barRun();
+    stop();
+    timer = setInterval(function () {
+      n--;
+      if (n > 0) { show(n); } else { go(); }
+    }, 1000);
 
-    function isApk(url) { return /\.apk(\?|#|$)/i.test(url); }
+    now.focus();
+  }
 
-    /* ---------- Utilitários ---------- */
-    function closest(el, cls) {
-        while (el && el !== document) {
-            if (el.classList && el.classList.contains(cls)) return el;
-            el = el.parentNode;
-        }
-        return null;
+  function fechar() {
+    stop();
+    clearTimeout(copyT);
+    ov.className = 'ov';
+    document.body.className = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  /* ----- Copiar link ----- */
+  function copyOld(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch (e) {}
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) {}
+    document.body.removeChild(ta);
+    cp.focus();
+    return ok;
+  }
+  function copyMsg(ok) {
+    cp.textContent = ok ? 'Link copiado!' : 'Não foi possível copiar';
+    clearTimeout(copyT);
+    copyT = setTimeout(function () { cp.textContent = 'Copiar link'; }, 2200);
+  }
+  function copiar() {
+    var u = cur;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(u).then(
+        function () { copyMsg(true); },
+        function () { copyMsg(copyOld(u)); }
+      );
+    } else {
+      copyMsg(copyOld(u));
     }
+  }
 
-    function nomeDoLink(a) {
-        var strong = a.querySelector('.btn-text strong');
-        if (strong) return strong.textContent.replace(/\s+/g, ' ').trim();
-        var grupo = closest(a, 'button-group');
-        var base = grupo ? grupo.querySelector('.unitv-title strong') : null;
-        var nome = base ? base.textContent.trim() : 'Aplicativo';
-        return nome + ' — ' + a.textContent.replace(/\s+/g, ' ').trim();
-    }
-
-    function setBtn(btn, iconClass, texto) {
-        btn.innerHTML = (iconClass ? '<i class="' + iconClass + '"></i>' : '') + texto;
-    }
-
-    function stopTimer() {
-        if (timer) { clearInterval(timer); timer = null; }
-    }
-
-    /* ---------- Contagem regressiva ---------- */
-    function renderCount(n) {
-        elCircle.textContent = n;
-        elStatus.textContent = 'Seu download começa em ' + n + '…';
-    }
-
-    function restartBar() {
-        elProg.className = 'dl-progress';
-        elProg.getElementsByTagName('span')[0].style.animationDuration = COUNTDOWN + 's';
-        void elProg.offsetWidth; // força reflow para reiniciar a animação
-        elProg.className = 'dl-progress run';
-    }
-
-    function marcarIniciado() {
-        stopTimer();
-        elCircle.className = 'dl-circle done';
-        elCircle.innerHTML = '<i class="fa-solid fa-check"></i>';
-        elStatus.textContent = 'Download iniciado! Se nada aconteceu, toque em “Baixar novamente”.';
-        elProg.className = 'dl-progress done';
-        setBtn(btnNow, 'fa-solid fa-download', 'Baixar novamente');
-        btnClose.textContent = 'Fechar';
-    }
-
-    function iniciarDownload() {
-        marcarIniciado();
-        // Navegação na própria aba: método mais compatível (TV Box, WebView, PC)
-        window.location.href = currentUrl;
-    }
-
-    /* ---------- Abrir / fechar modal ---------- */
-    function abrirModal(nome, url, origem) {
-        currentUrl = url;
-        lastFocus = origem || document.activeElement;
-
-        elTitle.textContent = nome;
-        elCircle.className = 'dl-circle';
-        btnNow.href = url;
-        setBtn(btnNow, 'fa-solid fa-download', 'Baixar agora');
-        setBtn(btnCopy, 'fa-regular fa-copy', 'Copiar link');
-        btnClose.textContent = 'Cancelar';
-        elUrl.textContent = url;
-
-        var dica = TIPS[device] || TIPS.desktop;
-        if (!isApk(url) && (device === 'tv' || device === 'android')) {
-            dica += ' Se abrir uma página em vez de baixar, siga as instruções que aparecerem.';
-        }
-        elTip.textContent = dica;
-
-        overlay.hidden = false;
-        document.documentElement.classList.add('modal-open');
-
-        var n = COUNTDOWN;
-        renderCount(n);
-        restartBar();
-        stopTimer();
-        timer = setInterval(function () {
-            n--;
-            if (n > 0) { renderCount(n); } else { iniciarDownload(); }
-        }, 1000);
-
-        btnNow.focus(); // foco no botão principal: no controle remoto basta apertar OK
-    }
-
-    function fecharModal() {
-        stopTimer();
-        clearTimeout(copyTimer);
-        overlay.hidden = true;
-        document.documentElement.classList.remove('modal-open');
-        if (lastFocus && lastFocus.focus) lastFocus.focus();
-    }
-
-    /* ---------- Copiar link (com fallback para http / TV) ---------- */
-    function copiarFallback(texto) {
-        var ta = document.createElement('textarea');
-        ta.value = texto;
-        ta.setAttribute('readonly', '');
-        ta.style.position = 'fixed';
-        ta.style.top = '0';
-        ta.style.left = '-9999px';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        try { ta.setSelectionRange(0, texto.length); } catch (e) {}
-        var ok = false;
-        try { ok = document.execCommand('copy'); } catch (e) {}
-        document.body.removeChild(ta);
-        btnCopy.focus();
-        return ok;
-    }
-
-    function feedbackCopiar(sucesso) {
-        setBtn(btnCopy, sucesso ? 'fa-solid fa-check' : 'fa-solid fa-triangle-exclamation',
-               sucesso ? 'Link copiado!' : 'Não foi possível copiar');
-        clearTimeout(copyTimer);
-        copyTimer = setTimeout(function () {
-            setBtn(btnCopy, 'fa-regular fa-copy', 'Copiar link');
-        }, 2200);
-    }
-
-    function copiarLink() {
-        var url = currentUrl;
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(url).then(function () {
-                feedbackCopiar(true);
-            }, function () {
-                feedbackCopiar(copiarFallback(url));
-            });
-        } else {
-            feedbackCopiar(copiarFallback(url));
-        }
-    }
-
-    /* ---------- Eventos ---------- */
-    links.forEach(function (link) {
-        link.addEventListener('click', function (e) {
-            // Ctrl/Cmd/Shift/botão do meio: deixa o navegador agir normalmente
-            if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return;
-            e.preventDefault();
-            abrirModal(nomeDoLink(link), link.getAttribute('href'), link);
-        });
+  /* ----- Eventos ----- */
+  for (var i = 0; i < links.length; i++) {
+    links[i].addEventListener('click', function (e) {
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button > 0) return;
+      e.preventDefault();
+      abrir(this);
     });
+  }
 
-    // Clique em "Baixar agora": navegação nativa pelo href; só atualiza a tela
-    btnNow.addEventListener('click', marcarIniciado);
-    btnCopy.addEventListener('click', copiarLink);
-    btnClose.addEventListener('click', fecharModal);
-    overlay.addEventListener('click', function (e) {
-        if (e.target === overlay) fecharModal();
-    });
+  now.addEventListener('click', function (e) {
+    // Evita que o "OK" do controle, ainda pressionado ao abrir a janela,
+    // dispare o download na hora e pule a contagem.
+    if (new Date().getTime() - openedAt < 600) { e.preventDefault(); return; }
+    started();
+  });
+  cp.addEventListener('click', copiar);
+  cl.addEventListener('click', fechar);
+  ov.addEventListener('click', function (e) { if (e.target === ov) fechar(); });
 
-    // Voltando pelo histórico (bfcache), não deixa o modal "preso" aberto
-    window.addEventListener('pageshow', function (e) {
-        if (e.persisted && !overlay.hidden) fecharModal();
-    });
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted && ov.className.indexOf('show') > -1) fechar();
+  });
 
-    /* ---------- Navegação por teclado / controle remoto ---------- */
-    var DIRS = {
-        ArrowRight: 'right', Right: 'right', 39: 'right',
-        ArrowLeft: 'left',   Left: 'left',   37: 'left',
-        ArrowDown: 'down',   Down: 'down',   40: 'down',
-        ArrowUp: 'up',       Up: 'up',       38: 'up'
-    };
+  /* ----- Controle remoto / teclado ----- */
+  var DIR = { 37: 'l', 38: 'u', 39: 'r', 40: 'd' };
 
-    function getDir(e) { return DIRS[e.key] || DIRS[e.keyCode] || null; }
+  function mid(el) {
+    var r = el.getBoundingClientRect();
+    return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  }
 
-    function centro(el) {
-        var r = el.getBoundingClientRect();
-        return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  function move(dir, list) {
+    var a = document.activeElement, k;
+    if (list.indexOf(a) < 0) { list[0].focus(); return; }
+    var c = mid(a), best = null, bs = 1e9;
+    for (k = 0; k < list.length; k++) {
+      if (list[k] === a) continue;
+      var p = mid(list[k]), dx = p.x - c.x, dy = p.y - c.y, main, cross, ok;
+      if (dir === 'r') { ok = dx > 5; main = dx; cross = Math.abs(dy); }
+      else if (dir === 'l') { ok = dx < -5; main = -dx; cross = Math.abs(dy); }
+      else if (dir === 'd') { ok = dy > 5; main = dy; cross = Math.abs(dx); }
+      else { ok = dy < -5; main = -dy; cross = Math.abs(dx); }
+      if (!ok) continue;
+      var s = main + cross * 3;
+      if (s < bs) { bs = s; best = list[k]; }
+    }
+    if (best) {
+      best.focus();
+      if (best.scrollIntoView && dir !== 'l' && dir !== 'r') {
+        var r = best.getBoundingClientRect();
+        if (r.top < 0 || r.bottom > (window.innerHeight || 0)) best.scrollIntoView(false);
+      }
+    }
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var code = e.keyCode, key = e.key;
+    var dir = DIR[code];
+    var enter = key === 'Enter' || code === 13 || code === 23 || code === 66;
+    var back = key === 'Escape' || key === 'Esc' || key === 'GoBack' || key === 'BrowserBack' ||
+               code === 27 || code === 8 || code === 4 || code === 461 || code === 10009;
+    var open = ov.className.indexOf('show') > -1;
+
+    if (open) {
+      if (back) { e.preventDefault(); fechar(); return; }
+      if (key === 'Tab') {
+        e.preventDefault();
+        var i = mbtns.indexOf(document.activeElement);
+        i += e.shiftKey ? -1 : 1;
+        if (i < 0) i = mbtns.length - 1;
+        if (i >= mbtns.length) i = 0;
+        mbtns[i].focus();
+        return;
+      }
+      if (dir && NAV) { e.preventDefault(); move(dir, mbtns); }
+      return;
     }
 
-    // Foco espacial: vai para o elemento mais próximo na direção pressionada
-    function mover(dir, lista) {
-        var atual = document.activeElement;
-        if (lista.indexOf(atual) < 0) { lista[0].focus(); return; }
-
-        var c = centro(atual), melhor = null, melhorScore = Infinity;
-        lista.forEach(function (el) {
-            if (el === atual) return;
-            var p = centro(el), dx = p.x - c.x, dy = p.y - c.y, ok, principal, cruzado;
-            if (dir === 'right')     { ok = dx > 5;  principal = dx;  cruzado = Math.abs(dy); }
-            else if (dir === 'left') { ok = dx < -5; principal = -dx; cruzado = Math.abs(dy); }
-            else if (dir === 'down') { ok = dy > 5;  principal = dy;  cruzado = Math.abs(dx); }
-            else                     { ok = dy < -5; principal = -dy; cruzado = Math.abs(dx); }
-            if (!ok) return;
-            var score = principal + cruzado * 3;
-            if (score < melhorScore) { melhorScore = score; melhor = el; }
-        });
-        if (melhor) melhor.focus();
+    if (enter && !e.repeat) {
+      var idx = links.indexOf(document.activeElement);
+      if (idx > -1) { e.preventDefault(); abrir(links[idx]); return; }
     }
-
-    document.addEventListener('keydown', function (e) {
-        var k = e.key, code = e.keyCode;
-        var dir = getDir(e);
-        var isEnter = k === 'Enter' || code === 13 || code === 23 || code === 66; // 23/66 = OK do controle (DPAD_CENTER)
-        var isBack = k === 'Escape' || k === 'Esc' || k === 'Backspace' || k === 'GoBack' || k === 'BrowserBack' ||
-                     code === 27 || code === 8 || code === 4 || code === 461 || code === 10009;
-
-        /* Modal aberto */
-        if (!overlay.hidden) {
-            if (isBack) { e.preventDefault(); fecharModal(); return; }
-
-            if (k === 'Tab') {
-                e.preventDefault();
-                var i = modalBtns.indexOf(document.activeElement);
-                i = e.shiftKey ? i - 1 : i + 1;
-                if (i < 0) i = modalBtns.length - 1;
-                if (i >= modalBtns.length) i = 0;
-                modalBtns[i].focus();
-                return;
-            }
-
-            if (dir) { e.preventDefault(); mover(dir, modalBtns); return; }
-
-            // Segurar OK não pode acionar o botão em repetição
-            if (isEnter && e.repeat) e.preventDefault();
-            return;
-        }
-
-        /* Lista de apps */
-        if (isEnter && !e.repeat) {
-            var idx = links.indexOf(document.activeElement);
-            if (idx > -1) {
-                e.preventDefault();
-                abrirModal(nomeDoLink(links[idx]), links[idx].getAttribute('href'), links[idx]);
-                return;
-            }
-        }
-
-        if (dir) {
-            e.preventDefault();
-            mover(dir, links);
-        }
-    });
+    if (dir && NAV) { e.preventDefault(); move(dir, links); }
+  });
 })();
 </script>
 
