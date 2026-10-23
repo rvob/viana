@@ -196,30 +196,26 @@ const FORMATS = {
 };
 
 const PALETTES = [
-  {name:'Esmeralda funda', type:'solid',    c1:'#07545C', logo:'#E9E9E9'},
-  {name:'Grafite frio',    type:'solid',    c1:'#191C21', logo:'#E9E9E9'},
-  {name:'Antracite',       type:'solid',    c1:'#171717', logo:'#EBEEF5'},
-  {name:'Orin carvão',     type:'solid',    c1:'#1E1E1E', logo:'#F4F4F4'},
-  {name:'Chumbo',          type:'solid',    c1:'#414143', logo:'#F2F4F3'},
-  {name:'Petróleo',        type:'solid',    c1:'#0E2A33', logo:'#E4F0F2'},
-  {name:'Índigo noturno',  type:'solid',    c1:'#1A1F3A', logo:'#EBEEF5'},
-  {name:'Ameixa negra',    type:'solid',    c1:'#241A2E', logo:'#EFE9F4'},
-  {name:'Vinho escuro',    type:'solid',    c1:'#2A1519', logo:'#F2E9EA'},
-  {name:'Musgo',           type:'solid',    c1:'#2B3325', logo:'#E9EDE4'},
-  {name:'Névoa lavanda',   type:'solid',    c1:'#EBEEF5', logo:'#414143'},
-  {name:'Areia fria',      type:'solid',    c1:'#D8D5CE', logo:'#2B2B2E'},
-  {name:'Oceano',          type:'gradient', c1:'#0f2027', c2:'#2c5364', angle:135, logo:'#ffffff'},
-  {name:'Ardósia',         type:'gradient', c1:'#1f2023', c2:'#3d3f43', angle:135, logo:'#ffffff'},
-  {name:'Orin grafite',    type:'gradient', c1:'#1E1E1E', c2:'#555555', angle:145, logo:'#F4F4F4'},
-  {name:'Abismo teal',     type:'gradient', c1:'#0D262B', c2:'#07545C', angle:140, logo:'#EBEEF5'},
-  {name:'Pântano',         type:'gradient', c1:'#274645', c2:'#07545C', angle:135, logo:'#EBEEF5'},
-  {name:'Aurora boreal',   type:'gradient', c1:'#0B1220', c2:'#1F6F6B', angle:155, logo:'#E6F4F2'},
-  {name:'Noturno azul',    type:'gradient', c1:'#0F1C2D', c2:'#193867', angle:135, logo:'#E9E9E9'},
-  {name:'Azul profundo',   type:'radial',   c1:'#12151E', c2:'#1D2B46', logo:'#E9E9E9'},
-  {name:'Crepúsculo',      type:'gradient', c1:'#1A1F3A', c2:'#4A3F6B', angle:145, logo:'#F0EEF7'},
-  {name:'Brasa',           type:'gradient', c1:'#1E1112', c2:'#5A2A2E', angle:150, logo:'#F6ECEA'},
-  {name:'Meia-noite cobre',type:'gradient', c1:'#10131C', c2:'#6B4A3A', angle:135, logo:'#F5EDE7'},
-  {name:'Floresta noturna',type:'gradient', c1:'#0F1A14', c2:'#2F5541', angle:140, logo:'#EAF3EC'}
+  {name:'Preto',           type:'solid',    c1:'#000000', logo:'#FFFFFF'},
+  {name:'Preto suave',     type:'solid',    c1:'#0A0A0A', logo:'#F5F5F5'},
+  {name:'Carvão',          type:'solid',    c1:'#161616', logo:'#F2F2F2'},
+  {name:'Grafite',         type:'solid',    c1:'#222222', logo:'#EDEDED'},
+  {name:'Chumbo',          type:'solid',    c1:'#333333', logo:'#F2F2F2'},
+  {name:'Aço escuro',      type:'solid',    c1:'#1A1D21', logo:'#EDEFF1'},
+  {name:'Branco',          type:'solid',    c1:'#FFFFFF', logo:'#111111'},
+  {name:'Neve',            type:'solid',    c1:'#F7F7F5', logo:'#161616'},
+  {name:'Gelo',            type:'solid',    c1:'#ECEEF0', logo:'#1A1A1A'},
+  {name:'Petróleo',         type:'solid',    c1:'#0E2A33', logo:'#E4F0F2'},
+  {name:'Noite',           type:'gradient', c1:'#000000', c2:'#2A2A2A', angle:145, logo:'#FFFFFF'},
+  {name:'Carvão suave',    type:'gradient', c1:'#0D0D0D', c2:'#262626', angle:135, logo:'#F2F2F2'},
+  {name:'Grafite fundo',   type:'gradient', c1:'#141414', c2:'#3A3A3A', angle:160, logo:'#F2F2F2'},
+  {name:'Aço noturno',     type:'gradient', c1:'#0B0D10', c2:'#272C33', angle:150, logo:'#EEF0F2'},
+  {name:'Verde luz',        type:'gradient', c1:'#0B7F7C', c2:'#053836', angle:150, logo:'#FFFFFF'},
+  {name:'Foco preto',      type:'radial',   c1:'#2A2A2A', c2:'#000000', logo:'#FFFFFF'},
+  {name:'Foco grafite',    type:'radial',   c1:'#333333', c2:'#0A0A0A', logo:'#F5F5F5'},
+  {name:'Neve suave',      type:'gradient', c1:'#FFFFFF', c2:'#E4E4E4', angle:145, logo:'#111111'},
+  {name:'Gelo suave',      type:'gradient', c1:'#F5F6F7', c2:'#D5D8DC', angle:150, logo:'#16181A'},
+  {name:'Foco claro',      type:'radial',   c1:'#FFFFFF', c2:'#CFCFCF', logo:'#111111'}
 ];
 
 const SHADOWS = {
@@ -229,16 +225,16 @@ const SHADOWS = {
 };
 
 const DEFAULTS = {
-  fmt:'wall', pal:17, bgType:'gradient', c1:'#0B1220', c2:'#1F6F6B', angle:155,
-  logoColor:'#E6F4F2', opacity:100, scaleWall:26, scaleProfile:62, pos:4,
+  fmt:'wall', pal:10, bgType:'gradient', c1:'#000000', c2:'#2A2A2A', angle:145,
+  logoColor:'#FFFFFF', opacity:100, scaleWall:26, scaleProfile:62, pos:4,
   shadow:'none', texture:'none', tex:35, guide:true
 };
 let state = Object.assign({}, DEFAULTS);
 try{
-  const saved = JSON.parse(localStorage.getItem('rv-wallpapers-v2') || 'null');
+  const saved = JSON.parse(localStorage.getItem('rv-wallpapers-v3') || 'null');
   if(saved && typeof saved === 'object') state = Object.assign(state, saved);
 }catch(e){}
-function persist(){ try{ localStorage.setItem('rv-wallpapers-v2', JSON.stringify(state)); }catch(e){} }
+function persist(){ try{ localStorage.setItem('rv-wallpapers-v3', JSON.stringify(state)); }catch(e){} }
 
 /* ---------- helpers ---------- */
 const HEX6 = /^#[0-9a-f]{6}$/i;
