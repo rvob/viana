@@ -1,7 +1,7 @@
 // Service Worker - Links M3U
 // Versão do cache: mude este valor sempre que atualizar os arquivos
 // para forçar o navegador a buscar as versões novas.
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `links-m3u-${CACHE_VERSION}`;
 
 const APP_SHELL = [
