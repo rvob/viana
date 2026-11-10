@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <meta name="mobile-web-app-capable" content="yes" />
 <title>Links M3U</title>
+<meta name="description" content="Gerador de links M3U e EPG a partir de usuário e senha." />
 
 <!-- PWA & Mobile Settings -->
 <meta name="theme-color" content="#08090d" media="(prefers-color-scheme: dark)" />
@@ -13,11 +14,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Links M3U" />
 
-<link rel="icon" type="image/svg+xml" href="/m3u/favicon.svg">
-<link rel="apple-touch-icon" href="/m3u/icon-192.png">
-
-<!-- Manifest PWA -->
-<link rel="manifest" href="/m3u/manifest.json">
+<link rel="icon" type="image/svg+xml" href="/m3u/favicon.svg?v=4">
+<link rel="apple-touch-icon" href="/m3u/apple-touch-icon.png?v=4">
+<link rel="manifest" href="/m3u/manifest.json?v=4">
 
 <!-- Fonts e ícones -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,8 +32,9 @@
     --border-color: rgba(255, 255, 255, 0.1);
     --text-main: #ffffff;
     --text-muted: #9da3b0;
-    --accent: #22B8A3;
-    --accent-strong: #086F5F;
+    --accent: #5eb8ff;
+    --accent-strong: #5b4bdb;
+    --danger: #ff9c9c;
     --radius: 14px;
     color-scheme: dark;
   }
@@ -47,21 +47,15 @@
       --border-color: rgba(15, 23, 32, 0.12);
       --text-main: #10151c;
       --text-muted: #5b6472;
-      --accent: #0e8f79;
-      --accent-strong: #086F5F;
+      --accent: #3b5bdb;
+      --accent-strong: #5b4bdb;
+      --danger: #c0392b;
       color-scheme: light;
     }
   }
 
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  html, body {
-    height: 100%;
-  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
 
   body {
     background: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--accent) 18%, transparent) 0%, var(--bg) 45%);
@@ -90,7 +84,6 @@
   }
 
   header {
-    text-align: center;
     margin-bottom: 16px;
     display: flex;
     align-items: center;
@@ -100,22 +93,14 @@
 
   .logo {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-    box-shadow: 0 4px 15px rgba(34, 184, 163, .35);
-    font-size: 16px;
-    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(92, 120, 255, .4);
   }
+  .logo img { width: 100%; height: 100%; display: block; }
 
-  h1 {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -.5px;
-  }
+  h1 { font-size: 20px; font-weight: 700; letter-spacing: -.5px; }
 
   .form-grid {
     display: grid;
@@ -132,7 +117,7 @@
     display: block;
   }
 
-  input {
+  input[type="text"], select {
     width: 100%;
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
@@ -146,13 +131,14 @@
     min-height: 44px;
   }
 
-  input:focus {
-    border-color: var(--accent);
-  }
+  input[type="text"]:focus, select:focus { border-color: var(--accent); }
 
-  .btn, .btn-limpar {
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .btn, .btn-limpar, .btn-mini {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    font-family: inherit;
   }
 
   .btn {
@@ -164,19 +150,17 @@
     font-weight: 600;
     cursor: pointer;
     transition: transform 0.2s, filter 0.2s;
-    background: linear-gradient(135deg, #10b981, #047857);
-    color: #ffffff;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, .2);
+    background: linear-gradient(135deg, #7c5cff, #14b8e6);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(92, 120, 255, .35);
     min-height: 46px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
   }
-
-  .btn:active {
-    transform: scale(.98);
-  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:active { transform: scale(.98); }
 
   .acoes-grid {
     display: grid;
@@ -200,9 +184,39 @@
     gap: 6px;
     min-height: 46px;
   }
+  .btn-limpar:active { transform: scale(.98); }
 
-  .btn-limpar:active {
-    transform: scale(.98);
+  .opcoes {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin: 0 0 12px;
+  }
+
+  .opcoes .lembrar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0;
+    cursor: pointer;
+  }
+  .opcoes .lembrar input { accent-color: var(--accent); width: 16px; height: 16px; }
+
+  .opcoes .formato { display: inline-flex; align-items: center; gap: 6px; }
+  .opcoes .formato label { margin: 0; }
+  .opcoes .formato select { min-height: 34px; padding: 4px 8px; font-size: 0.8rem; width: auto; }
+
+  .dica {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin: -4px 0 12px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
   }
 
   .aviso {
@@ -211,22 +225,87 @@
     border-radius: 10px;
     background: rgba(239, 68, 68, 0.12);
     border: 1px solid rgba(239, 68, 68, 0.3);
-    color: #ff9c9c;
+    color: var(--danger);
     font-size: 0.8rem;
     display: none;
     align-items: center;
     gap: 8px;
   }
+  .aviso.visivel { display: flex; }
 
-  .aviso.visivel {
-    display: flex;
+  /* Gerenciador de servidores */
+  details.servidores {
+    margin-top: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--input-bg);
   }
-
-  #resultado {
-    margin-top: 16px;
+  details.servidores > summary {
+    cursor: pointer;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    list-style: none;
     display: flex;
-    flex-direction: column;
-    gap: 12px;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+  }
+  details.servidores > summary::-webkit-details-marker { display: none; }
+  details.servidores > summary .seta { margin-left: auto; transition: transform .2s; }
+  details.servidores[open] > summary .seta { transform: rotate(180deg); }
+
+  .servidores-corpo { padding: 0 12px 12px; display: flex; flex-direction: column; gap: 8px; }
+
+  .servidor-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 6px 6px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    font-size: 0.8rem;
+    font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+  }
+  .servidor-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+  .btn-mini {
+    background: var(--input-bg);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .btn-mini.perigo { color: var(--danger); }
+
+  .add-servidor { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .add-servidor input { min-height: 40px; }
+
+  .servidores-rodape { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .servidores-rodape small { color: var(--text-muted); font-size: 0.7rem; }
+
+  /* Resultados */
+  #resultado { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .resumo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+    color: var(--text-muted);
   }
 
   .grupo-site {
@@ -253,18 +332,10 @@
     border-bottom: 1px solid var(--border-color);
   }
 
-  .titulo-nome {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-  }
+  .titulo-nome { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .titulo-nome span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .titulo-nome span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  .titulo-acoes { display: inline-flex; gap: 6px; flex-shrink: 0; }
 
   .copiar-tudo-btn {
     background: var(--card-bg);
@@ -281,9 +352,9 @@
     align-items: center;
     gap: 4px;
     flex-shrink: 0;
-    min-height: 30px;
+    min-height: 32px;
+    font-family: inherit;
   }
-
   .copiar-tudo-btn.copiado {
     background: linear-gradient(135deg, #10b981, #047857);
     border-color: transparent;
@@ -301,10 +372,7 @@
     border: 1px solid var(--border-color);
   }
 
-  .texto-container {
-    flex: 1;
-    min-width: 0;
-  }
+  .texto-container { flex: 1; min-width: 0; }
 
   .label-tipo {
     font-size: 0.68rem;
@@ -327,14 +395,11 @@
     cursor: text;
     padding-bottom: 2px;
   }
-
-  .texto-link::-webkit-scrollbar {
-    display: none;
-  }
+  .texto-link::-webkit-scrollbar { display: none; }
 
   .copiar-btn {
-    background: linear-gradient(135deg, #0796d5, #045d9a);
-    color: #ffffff;
+    background: linear-gradient(135deg, #7c5cff, #3b82f6);
+    color: #fff;
     border: none;
     border-radius: 8px;
     padding: 8px 12px;
@@ -348,16 +413,12 @@
     gap: 4px;
     min-height: 36px;
     touch-action: manipulation;
+    font-family: inherit;
   }
-
-  .copiar-btn.copiado {
-    background: linear-gradient(135deg, #10b981, #047857);
-  }
+  .copiar-btn.copiado { background: linear-gradient(135deg, #10b981, #047857); }
 
   @media (max-width: 380px) {
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
+    .form-grid { grid-template-columns: 1fr; }
   }
 
   footer {
@@ -370,22 +431,13 @@
     color: var(--text-muted);
     font-size: 12px;
   }
+  footer a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  footer a:hover { color: var(--accent-strong); }
 
-  footer a {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  footer a:hover {
-    color: var(--accent-strong);
-  }
-
-  /* toast de fallback quando o navegador bloqueia a área de transferência */
   .toast {
     position: fixed;
     left: 50%;
-    bottom: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
     transform: translate(-50%, 12px);
     background: #10151c;
     color: #fff;
@@ -401,19 +453,17 @@
     transition: opacity 0.2s, transform 0.2s;
     z-index: 50;
   }
+  .toast.visivel { opacity: 1; transform: translate(-50%, 0); }
 
-  .toast.visivel {
-    opacity: 1;
-    transform: translate(-50%, 0);
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
   }
 </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <header>
-      <div class="logo">
-        <i class="fa-solid fa-link"></i>
-      </div>
+      <div class="logo"><img src="/m3u/favicon.svg?v=4" alt="" width="40" height="40"></div>
       <h1>Links M3U</h1>
     </header>
 
@@ -422,35 +472,69 @@
         <label for="usuario">Usuário</label>
         <input type="text" id="usuario" placeholder="Usuário" autocomplete="username" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" />
       </div>
-
       <div>
         <label for="senha">Senha</label>
         <input type="text" id="senha" placeholder="Senha" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
       </div>
     </div>
 
+    <p class="dica">
+      <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+      <span>Dica: cole um link M3U ou EPG completo em qualquer campo e o usuário e a senha são preenchidos sozinhos.</span>
+    </p>
+
+    <div class="opcoes">
+      <label class="lembrar"><input type="checkbox" id="lembrar" checked /> Lembrar neste aparelho</label>
+      <div class="formato">
+        <label for="formato">Formato</label>
+        <select id="formato">
+          <option value="ts">TS (padrão)</option>
+          <option value="m3u8">HLS (m3u8)</option>
+        </select>
+      </div>
+    </div>
+
     <div class="acoes-grid">
-      <button class="btn" id="btnGerar">
-        <i class="fa-solid fa-bolt"></i> Gerar Links
+      <button class="btn" id="btnGerar" type="button">
+        <i class="fa-solid fa-bolt" aria-hidden="true"></i> Gerar Links
       </button>
-      <button class="btn-limpar" id="btnLimpar" aria-label="Limpar campos e dados salvos">
-        <i class="fa-solid fa-eraser"></i> Limpar
+      <button class="btn-limpar" id="btnLimpar" type="button" aria-label="Limpar campos e dados salvos">
+        <i class="fa-solid fa-eraser" aria-hidden="true"></i> Limpar
       </button>
     </div>
 
-    <div class="aviso" id="aviso">
-      <i class="fa-solid fa-triangle-exclamation"></i>
+    <div class="aviso" id="aviso" role="alert">
+      <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
       <span>Preencha o usuário e a senha para gerar os links.</span>
     </div>
 
-    <div id="resultado"></div>
-  </div>
+    <details class="servidores" id="detalhesServidores">
+      <summary>
+        <i class="fa-solid fa-server" aria-hidden="true"></i>
+        Servidores (<span id="qtdServidores">0</span>)
+        <i class="fa-solid fa-chevron-down seta" aria-hidden="true"></i>
+      </summary>
+      <div class="servidores-corpo">
+        <div id="listaServidores"></div>
+        <form class="add-servidor" id="formServidor">
+          <input type="text" id="novoServidor" placeholder="novoservidor.com ou host:porta" aria-label="Novo servidor" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="url" />
+          <button class="btn-mini" type="submit"><i class="fa-solid fa-plus" aria-hidden="true"></i> Adicionar</button>
+        </form>
+        <div class="servidores-rodape">
+          <small>Salvo apenas neste aparelho.</small>
+          <button class="btn-mini" type="button" id="btnRestaurar"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Restaurar padrão</button>
+        </div>
+      </div>
+    </details>
+
+    <div id="resultado" aria-live="polite"></div>
+  </main>
 
   <footer>
     © 2026 — Desenvolvido com IA por <a href="https://wa.me/+5574991162482" target="_blank" rel="noopener noreferrer">Rangel Viana</a>
   </footer>
 
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     const inputUsuario = document.getElementById('usuario');
@@ -458,25 +542,110 @@
     const aviso = document.getElementById('aviso');
     const toastEl = document.getElementById('toast');
     const resultadoDiv = document.getElementById('resultado');
+    const checkLembrar = document.getElementById('lembrar');
+    const selectFormato = document.getElementById('formato');
+    const listaServidoresEl = document.getElementById('listaServidores');
+    const qtdServidoresEl = document.getElementById('qtdServidores');
+    const formServidor = document.getElementById('formServidor');
+    const inputNovoServidor = document.getElementById('novoServidor');
 
-    const SITES = [
+    const CHAVE_CRED = 'm3u-credenciais';
+    const CHAVE_SERV = 'm3u-servidores';
+    const CHAVE_OPC = 'm3u-opcoes';
+
+    const SERVIDORES_PADRAO = [
       "8yca8t.live",
       "clubneymar.com",
       "diogoguido.com",
       "mevergiveupp.com",
       "phn35.xyz",
       "uabckiac.com",
-      "phn35.xyz",
       "78y8945.club",
       "clubthief.me"
     ];
 
+    /* ---------- Armazenamento seguro ---------- */
+    function lerJSON(chave, padrao) {
+      try {
+        const v = JSON.parse(localStorage.getItem(chave) || 'null');
+        return v === null ? padrao : v;
+      } catch (e) { return padrao; }
+    }
+    function salvarJSON(chave, valor) {
+      try { localStorage.setItem(chave, JSON.stringify(valor)); } catch (e) { /* armazenamento indisponível */ }
+    }
+    function removerChave(chave) {
+      try { localStorage.removeItem(chave); } catch (e) { /* ignora */ }
+    }
+
+    /* ---------- Servidores ---------- */
+    function normalizarServidor(txt) {
+      let s = String(txt || '').trim().toLowerCase();
+      s = s.replace(/^[a-z]+:\/\//, '').split('/')[0].trim();
+      return /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/.test(s) ? s : '';
+    }
+
+    let servidores = (() => {
+      const salvo = lerJSON(CHAVE_SERV, null);
+      const base = Array.isArray(salvo) ? salvo : SERVIDORES_PADRAO;
+      return [...new Set(base.map(normalizarServidor).filter(Boolean))];
+    })();
+
+    function salvarServidores() { salvarJSON(CHAVE_SERV, servidores); }
+
+    function renderServidores() {
+      qtdServidoresEl.textContent = servidores.length;
+      listaServidoresEl.innerHTML = '';
+      listaServidoresEl.style.cssText = 'display:flex;flex-direction:column;gap:6px';
+      servidores.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'servidor-item';
+        const nome = document.createElement('span');
+        nome.textContent = s;
+        const rem = document.createElement('button');
+        rem.type = 'button';
+        rem.className = 'btn-mini perigo';
+        rem.setAttribute('aria-label', 'Remover ' + s);
+        rem.innerHTML = '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+        rem.addEventListener('click', () => {
+          servidores = servidores.filter(x => x !== s);
+          salvarServidores();
+          renderServidores();
+          atualizarResultadoSeHouver();
+        });
+        item.append(nome, rem);
+        listaServidoresEl.appendChild(item);
+      });
+    }
+
+    formServidor.addEventListener('submit', e => {
+      e.preventDefault();
+      const s = normalizarServidor(inputNovoServidor.value);
+      if (!s) { mostrarToast('Servidor inválido. Use algo como exemplo.com ou host:8080'); return; }
+      if (servidores.includes(s)) { mostrarToast('Esse servidor já está na lista.'); return; }
+      servidores.push(s);
+      salvarServidores();
+      inputNovoServidor.value = '';
+      renderServidores();
+      atualizarResultadoSeHouver();
+      mostrarToast('Servidor adicionado.');
+    });
+
+    document.getElementById('btnRestaurar').addEventListener('click', () => {
+      servidores = [...SERVIDORES_PADRAO];
+      removerChave(CHAVE_SERV);
+      renderServidores();
+      atualizarResultadoSeHouver();
+      mostrarToast('Lista padrão restaurada.');
+    });
+
+    /* ---------- Toast e cópia ---------- */
     let toastTimeout;
     function mostrarToast(texto) {
       clearTimeout(toastTimeout);
       toastEl.textContent = texto;
       toastEl.classList.add('visivel');
-      toastTimeout = setTimeout(() => toastEl.classList.remove('visivel'), 2200);
+      toastTimeout = setTimeout(() => toastEl.classList.remove('visivel'), 2400);
     }
 
     // Copia texto com fallback para contextos sem navigator.clipboard
@@ -489,7 +658,6 @@
         }
         throw new Error('clipboard API indisponível');
       } catch (e) {
-        // Fallback: cria um campo temporário, seleciona e usa execCommand
         try {
           const textarea = document.createElement('textarea');
           textarea.value = texto;
@@ -509,17 +677,52 @@
       }
     }
 
-    function limparCampos() {
-      inputUsuario.value = '';
-      inputSenha.value = '';
-      resultadoDiv.innerHTML = '';
-      aviso.classList.remove('visivel');
-      localStorage.removeItem('m3u-credenciais');
-      inputUsuario.focus();
+    function feedbackBotao(botao, htmlOk, htmlNormal, classe) {
+      botao.innerHTML = htmlOk;
+      botao.classList.add(classe);
+      setTimeout(() => {
+        botao.innerHTML = htmlNormal;
+        botao.classList.remove(classe);
+      }, 1500);
     }
 
-    function mostrarAviso(mostrar) {
-      aviso.classList.toggle('visivel', mostrar);
+    /* ---------- Colar link completo ---------- */
+    // Aceita links get.php?username=..&password=.. , /epg/usuario/senha ou /player_api.php?...
+    function extrairCredenciais(texto) {
+      const t = String(texto || '').trim();
+      if (!/^(https?:\/\/|[\w.-]+\.[a-z]{2,}[:/])/i.test(t) && !/username=|password=/i.test(t)) return null;
+      const u = t.match(/[?&]username=([^&\s#]+)/i);
+      const p = t.match(/[?&]password=([^&\s#]+)/i);
+      if (u && p) return { usuario: decodificar(u[1]), senha: decodificar(p[1]) };
+      const e = t.match(/\/epg\/([^/\s?#]+)\/([^/\s?#]+)/i);
+      if (e) return { usuario: decodificar(e[1]), senha: decodificar(e[2]) };
+      return null;
+    }
+    function decodificar(v) { try { return decodeURIComponent(v); } catch (e) { return v; } }
+
+    [inputUsuario, inputSenha].forEach(campo => {
+      campo.addEventListener('paste', e => {
+        const colado = (e.clipboardData || window.clipboardData).getData('text');
+        const cred = extrairCredenciais(colado);
+        if (cred) {
+          e.preventDefault();
+          inputUsuario.value = cred.usuario;
+          inputSenha.value = cred.senha;
+          mostrarToast('Usuário e senha extraídos do link.');
+          gerarLinks();
+        }
+      });
+      campo.addEventListener('keydown', e => { if (e.key === 'Enter') gerarLinks(); });
+    });
+
+    /* ---------- Geração ---------- */
+    function montarItens(site, usuario, senha, formato) {
+      const u = encodeURIComponent(usuario);
+      const p = encodeURIComponent(senha);
+      return [
+        { tipo: 'M3U', url: `http://${site}/get.php?username=${u}&password=${p}&type=m3u_plus&output=${formato}` },
+        { tipo: 'EPG', url: `http://${site}/epg/${u}/${p}` }
+      ];
     }
 
     function criarLinhaLink(item) {
@@ -538,27 +741,21 @@
       textoLink.textContent = item.url;
       textoLink.title = 'Toque para selecionar';
 
-      container.appendChild(labelTipo);
-      container.appendChild(textoLink);
+      container.append(labelTipo, textoLink);
 
       const botao = document.createElement('button');
       botao.type = 'button';
       botao.className = 'copiar-btn';
-      botao.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
+      const htmlNormal = '<i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar';
+      botao.innerHTML = htmlNormal;
+      botao.setAttribute('aria-label', `Copiar link ${item.tipo}`);
 
       botao.addEventListener('click', async () => {
-        const sucesso = await copiarTexto(item.url);
-        if (sucesso) {
-          botao.innerHTML = '<i class="fa-solid fa-check"></i> OK!';
-          botao.classList.add('copiado');
-          setTimeout(() => {
-            botao.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar';
-            botao.classList.remove('copiado');
-          }, 1500);
+        if (await copiarTexto(item.url)) {
+          feedbackBotao(botao, '<i class="fa-solid fa-check" aria-hidden="true"></i> OK!', htmlNormal, 'copiado');
         }
       });
 
-      // Toque no próprio texto também seleciona tudo, facilitando copiar manual no celular
       textoLink.addEventListener('click', () => {
         const range = document.createRange();
         range.selectNodeContents(textoLink);
@@ -567,19 +764,11 @@
         selecao.addRange(range);
       });
 
-      linha.appendChild(container);
-      linha.appendChild(botao);
+      linha.append(container, botao);
       return linha;
     }
 
-    function criarGrupoSite(site, usuario, senha) {
-      const siteLimpo = site.replace(/\/$/, '');
-
-      const itens = [
-        { tipo: 'M3U', url: `http://${siteLimpo}/get.php?username=${encodeURIComponent(usuario)}&password=${encodeURIComponent(senha)}&type=m3u_plus&output=ts` },
-        { tipo: 'EPG', url: `http://${siteLimpo}/epg/${encodeURIComponent(usuario)}/${encodeURIComponent(senha)}` }
-      ];
-
+    function criarGrupoSite(site, itens) {
       const grupo = document.createElement('div');
       grupo.className = 'grupo-site';
 
@@ -588,79 +777,145 @@
 
       const nome = document.createElement('span');
       nome.className = 'titulo-nome';
-      nome.innerHTML = `<i class="fa-solid fa-globe"></i> <span>${siteLimpo}</span>`;
+      const icone = document.createElement('i');
+      icone.className = 'fa-solid fa-globe';
+      icone.setAttribute('aria-hidden', 'true');
+      const nomeTxt = document.createElement('span');
+      nomeTxt.textContent = site;
+      nome.append(icone, nomeTxt);
+
+      const acoes = document.createElement('span');
+      acoes.className = 'titulo-acoes';
+
+      const textoCompleto = itens.map(i => `${i.tipo}: ${i.url}`).join('\n');
 
       const botaoTudo = document.createElement('button');
       botaoTudo.type = 'button';
       botaoTudo.className = 'copiar-tudo-btn';
-      botaoTudo.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar tudo';
-
+      const htmlNormal = '<i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar tudo';
+      botaoTudo.innerHTML = htmlNormal;
       botaoTudo.addEventListener('click', async () => {
-        const textoCompleto = itens.map(i => `${i.tipo}: ${i.url}`).join('\n');
-        const sucesso = await copiarTexto(textoCompleto);
-        if (sucesso) {
-          botaoTudo.innerHTML = '<i class="fa-solid fa-check"></i> Copiado!';
-          botaoTudo.classList.add('copiado');
-          setTimeout(() => {
-            botaoTudo.innerHTML = '<i class="fa-regular fa-copy"></i> Copiar tudo';
-            botaoTudo.classList.remove('copiado');
-          }, 1500);
+        if (await copiarTexto(textoCompleto)) {
+          feedbackBotao(botaoTudo, '<i class="fa-solid fa-check" aria-hidden="true"></i> Copiado!', htmlNormal, 'copiado');
         }
       });
+      acoes.appendChild(botaoTudo);
 
-      titulo.appendChild(nome);
-      titulo.appendChild(botaoTudo);
+      titulo.append(nome, acoes);
       grupo.appendChild(titulo);
-
       itens.forEach(item => grupo.appendChild(criarLinhaLink(item)));
-
       return grupo;
+    }
+
+    function mostrarAviso(mostrar) { aviso.classList.toggle('visivel', mostrar); }
+
+    function renderResultado(usuario, senha) {
+      resultadoDiv.innerHTML = '';
+      if (!servidores.length) {
+        const vazio = document.createElement('p');
+        vazio.className = 'resumo';
+        vazio.textContent = 'Nenhum servidor na lista. Adicione um em "Servidores".';
+        resultadoDiv.appendChild(vazio);
+        return;
+      }
+
+      const formato = selectFormato.value;
+      const todos = servidores.map(s => ({ site: s, itens: montarItens(s, usuario, senha, formato) }));
+
+      const resumo = document.createElement('div');
+      resumo.className = 'resumo';
+      const contagem = document.createElement('span');
+      contagem.textContent = `${todos.length} servidor${todos.length > 1 ? 'es' : ''}`;
+      const btnTodosM3U = document.createElement('button');
+      btnTodosM3U.type = 'button';
+      btnTodosM3U.className = 'btn-mini';
+      const htmlNormal = '<i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar todos os M3U';
+      btnTodosM3U.innerHTML = htmlNormal;
+      btnTodosM3U.addEventListener('click', async () => {
+        const texto = todos.map(t => t.itens[0].url).join('\n');
+        if (await copiarTexto(texto)) {
+          feedbackBotao(btnTodosM3U, '<i class="fa-solid fa-check" aria-hidden="true"></i> Copiado!', htmlNormal, 'copiado');
+        }
+      });
+      resumo.append(contagem, btnTodosM3U);
+      resultadoDiv.appendChild(resumo);
+
+      const fragmento = document.createDocumentFragment();
+      todos.forEach(t => fragmento.appendChild(criarGrupoSite(t.site, t.itens)));
+      resultadoDiv.appendChild(fragmento);
     }
 
     function gerarLinks() {
       const usuario = inputUsuario.value.trim();
       const senha = inputSenha.value.trim();
 
-      resultadoDiv.innerHTML = '';
-
       if (!usuario || !senha) {
+        resultadoDiv.innerHTML = '';
         mostrarAviso(true);
+        (usuario ? inputSenha : inputUsuario).focus();
         return;
       }
       mostrarAviso(false);
 
-      localStorage.setItem('m3u-credenciais', JSON.stringify({ usuario, senha }));
+      if (checkLembrar.checked) salvarJSON(CHAVE_CRED, { usuario, senha });
+      else removerChave(CHAVE_CRED);
 
-      const fragmento = document.createDocumentFragment();
-      SITES.forEach(site => fragmento.appendChild(criarGrupoSite(site, usuario, senha)));
-      resultadoDiv.appendChild(fragmento);
+      renderResultado(usuario, senha);
     }
 
+    function atualizarResultadoSeHouver() {
+      if (resultadoDiv.childElementCount === 0) return;
+      const usuario = inputUsuario.value.trim();
+      const senha = inputSenha.value.trim();
+      if (usuario && senha) renderResultado(usuario, senha);
+    }
+
+    function limparCampos() {
+      inputUsuario.value = '';
+      inputSenha.value = '';
+      resultadoDiv.innerHTML = '';
+      mostrarAviso(false);
+      removerChave(CHAVE_CRED);
+      inputUsuario.focus();
+    }
+
+    /* ---------- Eventos ---------- */
     document.getElementById('btnGerar').addEventListener('click', gerarLinks);
     document.getElementById('btnLimpar').addEventListener('click', limparCampos);
 
-    [inputUsuario, inputSenha].forEach(campo => {
-      campo.addEventListener('keydown', e => {
-        if (e.key === 'Enter') gerarLinks();
-      });
+    selectFormato.addEventListener('change', () => {
+      salvarJSON(CHAVE_OPC, { formato: selectFormato.value, lembrar: checkLembrar.checked });
+      atualizarResultadoSeHouver();
+    });
+    checkLembrar.addEventListener('change', () => {
+      salvarJSON(CHAVE_OPC, { formato: selectFormato.value, lembrar: checkLembrar.checked });
+      if (!checkLembrar.checked) removerChave(CHAVE_CRED);
+      else if (inputUsuario.value.trim() && inputSenha.value.trim()) {
+        salvarJSON(CHAVE_CRED, { usuario: inputUsuario.value.trim(), senha: inputSenha.value.trim() });
+      }
     });
 
+    /* ---------- Inicialização ---------- */
     window.addEventListener('DOMContentLoaded', () => {
-      try {
-        const salvo = JSON.parse(localStorage.getItem('m3u-credenciais') || 'null');
-        if (salvo && salvo.usuario && salvo.senha) {
-          inputUsuario.value = salvo.usuario;
-          inputSenha.value = salvo.senha;
-          gerarLinks();
-        }
-      } catch (e) { /* dados salvos inválidos, ignora */ }
+      renderServidores();
+
+      const opc = lerJSON(CHAVE_OPC, null);
+      if (opc) {
+        if (opc.formato === 'ts' || opc.formato === 'm3u8') selectFormato.value = opc.formato;
+        if (typeof opc.lembrar === 'boolean') checkLembrar.checked = opc.lembrar;
+      }
+
+      const salvo = lerJSON(CHAVE_CRED, null);
+      if (checkLembrar.checked && salvo && salvo.usuario && salvo.senha) {
+        inputUsuario.value = salvo.usuario;
+        inputSenha.value = salvo.senha;
+        gerarLinks();
+      }
     });
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/m3u/sw.js')
-          .then(() => console.log('Service Worker registrado com sucesso'))
-          .catch(err => console.log('Erro ao registrar Service Worker:', err));
+        navigator.serviceWorker.register('/m3u/sw.js?v=4').catch(err => console.log('Erro ao registrar Service Worker:', err));
       });
     }
   </script>
